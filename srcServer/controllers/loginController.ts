@@ -36,7 +36,7 @@ export const loginUser = async (req: Request<{}, {}, LoginBody>, res: Response<L
         if (!passwordMatch) return res.status(401).json({ success: false, message: 'Invalid password' });
 
         const now = Math.floor(Date.now() / 1000);
-        const exp = now + 15 * 60;
+        const exp = now + 60 * 60;
         const payload: JwtPayload = { userId: user.userId, exp };
         const token = jwt.sign(payload, jwtSecret);
 

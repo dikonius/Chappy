@@ -1,31 +1,49 @@
-import { useState } from 'react'
-import chappyLogo from './assets/chappy-logo.png'
+import React, { useState, useEffect } from 'react';
+import { Outlet } from 'react-router-dom';
 import './App.css'
+import LoadingSpinner from './components/LoadingSpinner';
 
-function App() {
-  const [count, setCount] = useState(0)
+// Auth hook
+const useAuth = () => {
+  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [user, setUser] = useState<any>(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null);
+
+  useEffect(() => {
+    // Listen for storage changes (e.g., from other tabs)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'token') setToken(e.newValue);
+      if (e.key === 'user') setUser(e.newValue ? JSON.parse(e.newValue) : null);
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setToken(null);
+    setUser(null);
+  };
+
+  return { token, user, setToken, setUser, logout, isAuthenticated: !!token };
+};
+
+const App: React.FC = () => {
+  const { user, isAuthenticated } = useAuth();
+  const [isGuestMode, setIsGuestMode] = useState<boolean>(!isAuthenticated); // Toggle for guest (from Figma)
+
+  // Loading state while checking auth
+  if (!user && isAuthenticated) {
+    return <LoadingSpinner size="large" />;
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={chappyLogo} className="logo" alt="Vite logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div className="app">
+        <div className="content-area">
+          <Outlet context={{ user, isGuestMode, setIsGuestMode }} /> {/* Pass props to child routes */}
+        </div>
+    </div>
+  );
+};
 
-export default App
+export default App;

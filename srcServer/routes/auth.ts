@@ -3,13 +3,16 @@ import { loginUser } from '../controllers/loginController.js';
 import { registerUser } from '../controllers/registerController.js';
 import { getSecret } from '../controllers/secretController.js';
 import { getAllUsers } from '../controllers/getAllUsersController.js';
+import { authMiddleware } from '../server.js';
 
 const router = Router();
 
-//users
+// Public auth
 router.post('/login', loginUser);
 router.post('/register', registerUser);
-router.get('/secret', getSecret);
-router.get('/users', getAllUsers);
+
+// Protected
+router.get('/secret', authMiddleware, getSecret); 
+router.get('/users', authMiddleware, getAllUsers); 
 
 export default router;

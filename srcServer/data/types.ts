@@ -1,3 +1,6 @@
+import type { Query } from 'express-serve-static-core';
+import type { Request } from 'express';
+
 interface MessageResponse {
   message: string;
 }
@@ -30,4 +33,16 @@ interface JwtPayload {
   exp: number;
 }
 
-export type { User, LoginBody, LoginResponse, JwtPayload, MessageResponse };
+// Properly generic interface for auth-extended requests (mirrors Express Request generics)
+interface AuthRequest<
+  P = {},
+  ResBody = any,
+  ReqBody = any,
+  ReqQuery = Query
+> extends Request<P, ResBody, ReqBody, ReqQuery> {
+  user?: {
+    userId: string;
+  };
+}
+
+export type { AuthRequest, User, LoginBody, LoginResponse, JwtPayload, MessageResponse };
