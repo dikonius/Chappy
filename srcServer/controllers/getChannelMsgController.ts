@@ -1,34 +1,48 @@
-import type { Request, Response } from 'express';
+import type { Response } from 'express';
+import { QueryCommand, GetCommand } from '@aws-sdk/lib-dynamodb';
 import { db, tableName } from '../data/dynamoDB.js';
-import { QueryCommand } from '@aws-sdk/lib-dynamodb';
-
+import { formatMessages } from '../utils/Messages.js';
+import type { AuthRequest } from '../data/types.js';
 
 export const getChannelMessages = async (
-  req: Request<{ channelName: string }>,
+  req: AuthRequest<{ channelName: string }>,
   res: Response
 ) => {
   try {
     const channelName = req.params.channelName;
     const pk = `CHANNEL#${channelName}`;
 
+    // Check if channel is locked (fetch META)
+    const { Item: meta } = await db.send(new GetCommand({
+      TableName: tableName,
+      Key: { pk, sk: 'META' },
+    }));
+
+    const isLocked = meta?.isLocked === true || meta?.isLocked === 'true';
+    const isGuest = !req.user;  // True if no user (guest)
+
+    if (isLocked && isGuest) {
+      return res.status(403).json({ success: false, message: 'Login required for locked channels' });
+    }
+
+    // Fetch messages (only if allowed)
     const { Items } = await db.send(new QueryCommand({
       TableName: tableName,
       KeyConditionExpression: '#pk = :pk',
       ExpressionAttributeNames: { '#pk': 'pk' },
       ExpressionAttributeValues: { ':pk': pk },
-      ProjectionExpression: 'sk, content, senderId, userId', // Exclude sensitive fields
+      ProjectionExpression: 'sk, content, senderId, userId',
     }));
 
-    // Filter messages (exclude META) and sort by timestamp
-    const messages = (Items || [])
-      .filter((item: any) => item.sk.startsWith('MSG#'))
-      .sort((a: any, b: any) => a.sk.localeCompare(b.sk))
-      .map((item: any) => ({
-        id: item.sk,
-        content: item.content,
-        senderId: item.senderId,
-        timestamp: item.sk.split('#')[1],
-      }));
+    // Unwrap if wrapped (your logs show plain)
+    const unwrappedItems = (Items || []).map((item: any) => ({
+      sk: item.sk || item.sk?.S,
+      content: item.content || item.content?.S,
+      senderId: item.senderId || item.senderId?.S,
+      userId: item.userId || item.userId?.S,
+    }));
+
+    const messages = formatMessages(unwrappedItems);  // Your helper (sorts/filters MSG#)
 
     res.json({ success: true, messages });
   } catch (error) {

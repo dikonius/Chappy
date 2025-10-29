@@ -2,7 +2,7 @@ import type { Request, Response } from 'express';
 import { db, tableName } from '../data/dynamoDB.js';
 import { loginSchema } from '../data/validation.js';
 import type { User, LoginBody, LoginResponse, JwtPayload } from '../data/types.js';
-import { QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { ScanCommand } from '@aws-sdk/lib-dynamodb';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -21,12 +21,18 @@ export const loginUser = async (req: Request<{}, {}, LoginBody>, res: Response<L
     const { name, password } = result.data;
 
     try {
-        const { Items } = await db.send(new QueryCommand({
+        const { Items } = await db.send(new ScanCommand({
             TableName: tableName,
-            IndexName: 'GSIType-name-index',
-            KeyConditionExpression: '#u = :username',
-            ExpressionAttributeNames: { '#u': 'name' },
-            ExpressionAttributeValues: { ':username': name },
+            FilterExpression: '#gsiType = :type AND #n = :name',
+            ExpressionAttributeNames: {
+                '#gsiType': 'GSIType',
+                '#n': 'name',  // Alias for reserved keyword 'name'
+            },
+            ExpressionAttributeValues: {
+                ':type': 'USER',
+                ':name': name,
+            },
+            ProjectionExpression: 'pk, sk, #n, password, userId',  // Use #n for 'name'
         }));
 
         const user = Items?.[0] as User | undefined;

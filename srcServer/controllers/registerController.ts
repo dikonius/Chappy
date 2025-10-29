@@ -18,7 +18,7 @@ export const registerUser = async (req: Request, res: Response<LoginResponse>) =
     try {
         const { Items } = await db.send(new QueryCommand({
             TableName: tableName,
-            IndexName: 'GSIType-name-index',
+            IndexName: 'GSIType-name-index-v2',
             KeyConditionExpression: '#pk = :pk AND #sk = :sk',
             ExpressionAttributeNames: { '#pk': 'GSIType', '#sk': 'name' },
             ExpressionAttributeValues: { ':pk': 'USER', ':sk': name },

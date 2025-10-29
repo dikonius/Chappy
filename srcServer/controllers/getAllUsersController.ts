@@ -26,14 +26,17 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
     const { Items } = await db.send(new QueryCommand({
       TableName: tableName,
-      IndexName: 'GSIType-name-index',
+      IndexName: 'GSIType-name-index-v2',
       KeyConditionExpression: '#gsi_pk = :gsi_pk',
-      ExpressionAttributeNames: { '#gsi_pk': 'GSIType' },
+      ExpressionAttributeNames: { 
+        '#gsi_pk': 'GSIType',
+        '#n': 'name'  // Alias for reserved keyword 'name'
+      },
       ExpressionAttributeValues: { ':gsi_pk': 'USER' },
-      ProjectionExpression: 'userId, name'
+      ProjectionExpression: 'userId, #n'  // Use alias #n for 'name'
     }));
 
-    const users = Items?.map(item => ({ id: item.userId, name: item.name })) || [];
+    const users = Items?.map(item => ({ id: item.userId, name: item.name })) || [];  // DynamoDB returns original 'name'
 
     res.json({ success: true, users });
   } catch (error) {

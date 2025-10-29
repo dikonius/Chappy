@@ -1,8 +1,8 @@
 import type { Response } from 'express';
 import { db, tableName } from '../data/dynamoDB.js';
 import { PutCommand, GetCommand } from '@aws-sdk/lib-dynamodb';
-import type { AuthRequest } from '../data/types.js';
-
+import { ERROR_MESSAGES, MESSAGE_TYPES, type AuthRequest } from '../data/types.js';
+import { generateMessageSK } from '../utils/Messages.js';
 
 export const sendChannelMessage = async (
   req: AuthRequest<{ channelName: string }, {}, { content: string }>,
@@ -11,49 +11,56 @@ export const sendChannelMessage = async (
   try {
     const { content } = req.body;
     const channelName = req.params.channelName;
-    if (!content.trim()) {
-      return res.status(400).json({ success: false, message: 'Message content is required' });
+
+    if (!content?.trim()) {
+      return res
+        .status(400)
+        .json({ success: false, message: ERROR_MESSAGES.CONTENT_REQUIRED });
     }
 
-    // Determine sender (user or guest)
-    let senderId: string;
-    if (req.user?.userId) {
-      senderId = req.user.userId;
-    } else {
-      // Guest mode: Allow sends only in public channels
-      senderId = 'guest';
-    }
-
+    const senderId = req.user?.userId ?? 'guest';
     const pk = `CHANNEL#${channelName}`;
-    const timestamp = new Date().toISOString();
-    const sk = `MSG#${timestamp}`;
+    const sk = generateMessageSK();
 
-    // Check if channel is locked (fetch META item)
-    const { Item: meta } = await db.send(new GetCommand({
-      TableName: tableName,
-      Key: { pk, sk: 'META' },
-    }));
+    // --- Check channel lock state ---
+    const { Item: meta } = await db.send(
+      new GetCommand({
+        TableName: tableName,
+        Key: { pk, sk: 'META' },
+      })
+    );
 
-    const isLocked = meta?.isLocked === 'true'; // Assuming string 'true'/'false' from schema
-    if (isLocked && senderId === 'guest') {
-      return res.status(403).json({ success: false, message: 'Login required for locked channels' });
+    const isLocked = meta?.isLocked === 'true';
+
+    // --- Guests cannot send to locked channels ---
+    if (isLocked === true && senderId === 'guest') {
+      return res
+        .status(403)
+        .json({ success: false, message: ERROR_MESSAGES.LOCKED_CHANNEL });
     }
 
+    // --- Store message ---
     const messageItem = {
       pk,
       sk,
       content: content.trim(),
-      GSIType: 'CHANNEL',
+      GSIType: MESSAGE_TYPES.CHANNEL,
       senderId,
-      userId: senderId, // For consistency, though not always used
+      userId: senderId,
     };
 
-    await db.send(new PutCommand({
-      TableName: tableName,
-      Item: messageItem,
-    }));
+    await db.send(
+      new PutCommand({
+        TableName: tableName,
+        Item: messageItem,
+      })
+    );
 
-    res.status(201).json({ success: true, message: 'Message sent successfully', timestamp });
+    res.status(201).json({
+      success: true,
+      message: 'Message sent successfully',
+      timestamp: sk,
+    });
   } catch (error) {
     console.error('Send channel message error:', (error as Error).message);
     res.status(500).json({ success: false, message: 'Server error' });

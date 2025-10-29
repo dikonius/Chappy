@@ -1,17 +1,18 @@
 import type { Response } from 'express';
 import { db, tableName } from '../data/dynamoDB.js';
 import { QueryCommand } from '@aws-sdk/lib-dynamodb';
-import type { AuthRequest } from '../data/types.js';
+import type { AuthRequest, MessagesResponse } from '../data/types.js';
+import { formatMessages } from '../utils/Messages.js';
 
 
 export const getDMs = async (
-  req: AuthRequest<{ receiverId: string }, { success?: boolean; messages?: any[] }>,
-  res: Response
+  req: AuthRequest<{ receiverId: string }, MessagesResponse>,
+  res: Response<MessagesResponse>
 ) => {
   try {
     const { receiverId } = req.params;
     if (!req.user?.userId) {
-      return res.status(401).json({ success: false, message: 'Authentication required to view DMs' });
+      return res.status(401).json({ success: false, messages: [] } as MessagesResponse);
     }
 
     const userId = req.user.userId;
@@ -24,23 +25,14 @@ export const getDMs = async (
       KeyConditionExpression: '#pk = :pk',
       ExpressionAttributeNames: { '#pk': 'pk' },
       ExpressionAttributeValues: { ':pk': pk },
-      ProjectionExpression: 'sk, content, senderId, userId', // Exclude sensitive fields
+      ProjectionExpression: 'sk, content, senderId, userId',
     }));
 
-    // Filter and sort messages by timestamp (sk)
-    const messages = (Items || [])
-      .filter((item: any) => item.sk.startsWith('MSG#'))
-      .sort((a: any, b: any) => a.sk.localeCompare(b.sk))
-      .map((item: any) => ({
-        id: item.sk,
-        content: item.content,
-        senderId: item.senderId,
-        timestamp: item.sk.split('#')[1],
-      }));
+    const messages = formatMessages(Items);
 
     res.json({ success: true, messages });
   } catch (error) {
     console.error('Get DMs error:', (error as Error).message);
-    res.status(500).json({ success: false, message: 'Server error' });
+    res.status(500).json({ success: false, messages: [] } as MessagesResponse);
   }
 };

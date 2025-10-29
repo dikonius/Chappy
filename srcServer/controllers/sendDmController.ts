@@ -1,7 +1,8 @@
 import type { Response } from 'express';
 import { db, tableName } from '../data/dynamoDB.js';
+import { type MessageType, type AuthRequest, MESSAGE_TYPES } from '../data/types.js';
 import { PutCommand } from '@aws-sdk/lib-dynamodb';
-import type { AuthRequest } from '../data/types.js';
+import { generateMessageSK } from '../utils/Messages.js';
 
 
 export const sendDM = async (
@@ -19,19 +20,18 @@ export const sendDM = async (
       return res.status(400).json({ success: false, message: 'Message content is required' });
     }
 
-    // Sort user IDs for symmetric PK (ensures bidirectional conversation key)
+    // Sort user IDs for symmetric PK
     const [user1, user2] = [senderId, receiverId].sort();
     const pk = `DM#${user1}#${user2}`;
-    const timestamp = new Date().toISOString();
-    const sk = `MSG#${timestamp}`;
+    const sk = generateMessageSK();
 
     const messageItem = {
       pk,
       sk,
       content: content.trim(),
-      GSIType: 'DM',
+      GSIType: MESSAGE_TYPES.DM as MessageType,
       senderId,
-      userId: senderId, // Owner/sender reference, matching table schema
+      userId: senderId,
     };
 
     await db.send(new PutCommand({
@@ -39,7 +39,7 @@ export const sendDM = async (
       Item: messageItem,
     }));
 
-    res.status(201).json({ success: true, message: 'DM sent successfully', timestamp });
+    res.status(201).json({ success: true, message: 'DM sent successfully', timestamp: sk });
   } catch (error) {
     console.error('Send DM error:', (error as Error).message);
     res.status(500).json({ success: false, message: 'Server error' });

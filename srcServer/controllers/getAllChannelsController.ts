@@ -1,27 +1,40 @@
 import type { Request, Response } from 'express';
 import { db, tableName } from '../data/dynamoDB.js';
 import { QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { MESSAGE_TYPES } from '../data/types.js';
 
-
-//  List all channels (public endpoint, no auth needed)
 export const getChannels = async (req: Request, res: Response) => {
   try {
     const { Items } = await db.send(new QueryCommand({
       TableName: tableName,
-      IndexName: 'GSIType-name-index', // Assuming GSI on GSIType and name
-      KeyConditionExpression: '#gsi_pk = :gsi_pk',
-      ExpressionAttributeNames: { '#gsi_pk': 'GSIType' },
-      ExpressionAttributeValues: { ':gsi_pk': 'CHANNEL' },
-      ProjectionExpression: 'pk, name, isLocked, creatorId',
+      IndexName: 'GSIType-name-index-v2',  // Your new GSI
+      KeyConditionExpression: '#gsiType = :channelType',
+      ExpressionAttributeNames: {
+        '#gsiType': 'GSIType',
+        '#sk': 'sk',
+        '#n': 'name',
+      },
+      ExpressionAttributeValues: {
+        ':channelType': MESSAGE_TYPES.CHANNEL,
+      },
+      ProjectionExpression: 'pk, #sk, #n, isLocked, creatorId',
     }));
 
-    // Filter META items only
-    const channels = (Items || [])
-      .filter((item: any) => item.sk === 'META')
-      .map((item: any) => ({
-        id: item.pk.split('#')[1], // e.g., 'public-random'
+    // Unwrap (plain strings/boolean)
+    const unwrappedItems = (Items || []).map((item: any) => ({
+      pk: item.pk,
+      sk: item.sk,
+      name: item.name,
+      isLocked: item.isLocked,
+      creatorId: item.creatorId,
+    }));
+
+    const channels = unwrappedItems
+      .filter((item) => item.sk === 'META' || (item.name && item.creatorId))
+      .map((item) => ({
+        id: item.pk.split('#')[1],
         name: item.name,
-        isLocked: item.isLocked === 'true',
+        isLocked: Boolean(item.isLocked),
         creatorId: item.creatorId,
       }));
 
