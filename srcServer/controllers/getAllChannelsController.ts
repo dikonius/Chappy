@@ -7,7 +7,7 @@ export const getChannels = async (req: Request, res: Response) => {
   try {
     const { Items } = await db.send(new QueryCommand({
       TableName: tableName,
-      IndexName: 'GSIType-name-index-v2',  // Your new GSI
+      IndexName: 'GSIType-name-index-v2',  
       KeyConditionExpression: '#gsiType = :channelType',
       ExpressionAttributeNames: {
         '#gsiType': 'GSIType',

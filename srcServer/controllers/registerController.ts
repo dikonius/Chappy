@@ -29,7 +29,7 @@ export const registerUser = async (req: Request, res: Response<LoginResponse>) =
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const userId = `u${crypto.randomBytes(3).readUIntBE(0, 3)}`; // Generates something like 'u001' to 'u16777215' for uniqueness
+        const userId = `u${crypto.randomBytes(3).readUIntBE(0, 3)}`; 
 
         const newUser: User = {
             pk: `USER#${userId}`,
