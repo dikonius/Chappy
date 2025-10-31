@@ -29,9 +29,9 @@ app.post('/api/dm/send', authMiddleware, sendDM);
 app.get('/api/dm/:receiverId', authMiddleware, getDMs);
 
 // Channel routes 
-app.post('/api/channel/:channelName/send',  authMiddleware, sendChannelMessage);
+app.post('/api/channel/:channelName/send', authMiddleware, sendChannelMessage);
 app.get('/api/channel/:channelName', authMiddleware, getChannelMessages);
-app.get('/api/channels', getChannels );
+app.get('/api/channel', getChannels );
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

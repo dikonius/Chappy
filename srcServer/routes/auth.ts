@@ -13,6 +13,6 @@ router.post('/register', registerUser);
 
 // Protected
 router.get('/secret', authMiddleware, getSecret);
-router.get('/users', authMiddleware, getAllUsers);
+router.get('/user', authMiddleware, getAllUsers);
 
 export default router;
