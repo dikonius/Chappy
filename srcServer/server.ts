@@ -25,8 +25,8 @@ app.use(express.static('./dist/'));
 app.use('/api', authRouter);
 
 // DM routes (protected)
-app.post('/api/dm/send', authMiddleware, sendDM);
-app.get('/api/dm/:receiverId', authMiddleware, getDMs);
+app.post('/api/dm/:receiverId/send', authMiddleware, sendDM);  // Path param for receiverId
+app.get('/api/dm/:receiverId', authMiddleware, getDMs);  // Already has path param
 
 // Channel routes 
 app.post('/api/channel/:channelName/send', authMiddleware, sendChannelMessage);

@@ -1,16 +1,17 @@
 import type { Response } from 'express';
 import { db, tableName } from '../data/dynamoDB.js';
-import { type MessageType, type AuthRequest, MESSAGE_TYPES } from '../data/types.js';
+import type { MessageType, AuthRequest } from '../data/types.js';
 import { PutCommand } from '@aws-sdk/lib-dynamodb';
 import { generateMessageSK } from '../utils/Messages.js';
-
+import { MESSAGE_TYPES } from '../data/types.js';
 
 export const sendDM = async (
-  req: AuthRequest<{}, { success?: boolean; message?: string }, { receiverId: string; content: string }>,
+  req: AuthRequest<{ receiverId: string }, {}, { content: string }>,  // receiverId from path, content from body
   res: Response
 ) => {
   try {
-    const { receiverId, content } = req.body;
+    const { receiverId } = req.params;  // From path
+    const { content } = req.body;  // Only content in body
     if (!req.user?.userId) {
       return res.status(401).json({ success: false, message: 'Authentication required to send DMs' });
     }
@@ -20,7 +21,7 @@ export const sendDM = async (
       return res.status(400).json({ success: false, message: 'Message content is required' });
     }
 
-    // Sort user IDs for symmetric PK
+    // Sort user IDs for symmetric PK (u001 < u456 = 'DM#u001#u456')
     const [user1, user2] = [senderId, receiverId].sort();
     const pk = `DM#${user1}#${user2}`;
     const sk = generateMessageSK();
