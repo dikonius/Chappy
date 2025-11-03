@@ -1,99 +1,153 @@
 .home-page {
   display: flex;
   height: 100vh;
-  background-color: rgba(56, 54, 54, 1); 
-  overflow: hidden;
+  background-color: rgba(56, 54, 54, 1);
+  overflow-x: hidden;
 }
 
 .home-left-panel {
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items:flex-end;
   justify-content: center;
-  /* background-color: #9db5c1;  */
-  padding: 2rem;
-  /* border-radius: 50%; */
-  margin-bottom: 2em;
+  /* padding: 2em;
+  margin-bottom: 2em; */
 }
 
 .home-dog-image {
-  width: 19em;
   height: 30em;
-  object-fit: cover;
-  /* margin-bottom: 1rem; */
+  max-width: 100%;
+  object-fit: contain;
 }
 
-.home-logo {
-  font-size: 3rem;
+/* .home-logo {
+  font-size: 3em;
   font-weight: bold;
   color: #007bff; 
   margin: 0;
   text-align: center;
-}
+} */
 
 .home-right-panel {
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items:center;
   justify-content: center;
-  padding: 2rem;
-  /* background-color: white; */
+  padding: 2em;
 }
 
-.home-welcome {
-  font-size: 2.5rem;
-  color: #333;
-  margin-bottom: 1rem;
+.h2-login {
+  font-size: 2em;
+  color: white;
+  font-weight: bold;
+  /* color: rgba(15, 78, 123, 1); */
+  margin-bottom: 1em;
   text-align: center;
 }
 
-.home-subtitle {
-  font-size: 1.2rem;
+/* .home-subtitle {
+  font-size: 1.2em;
   color: #23301d;
-  margin-bottom: 2rem;
+  margin-bottom: 2em;
   text-align: center;
-  max-width: 300px;
-}
+  max-width: 18em;
+} */
 
 .home-button {
-  width: 200px;
-  height: 50px;
+  width: 13em;
+  height: 3em;
   border: none;
   border-radius: 8px;
-  font-size: 1.1rem;
+  font-size: 1.1em;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-bottom: 1rem;
+  margin-bottom: 1em;
   font-family: inherit;
 }
 
 .home-button.primary {
-  background-color: rgba(190, 95, 41, 1); 
+  background-color: #da9548;
   color: black;
   font-weight: bold;
   font-family: inherit;
 
 }
 
-.home-button.primary:hover {
-  background-color: rgb(250, 145, 85);
+.nameLabel, .passwordLabel {
+  font-size: 1em;
+  color: #9ab5be; /* White for dark bg */
+  margin-bottom: 0.5em;
+  font-weight: 900;
+  width: 17em;
+  text-align: left;
 }
 
-.home-button.secondary {
-  background-color: rgba(15, 78, 123, 1);
+#name, #password {
+  padding: 0.75em;
+  border: none;
+  border-radius: 4px;
+  font-size: 1em;
+  margin-bottom: 0.5em; /* Space for error below */
+  background-color: #fff;
+  color: #333;
+  font-family: inherit;
+  width: 17em;
+  box-sizing: border-box;
+}
+
+.error-message {
+  color: #f50808; /* Red for errors */
+  font-size: 0.9em;
+  min-height: 1.2em; /* Reserved space – always takes this height */
+  margin-bottom: 1em; /* Consistent spacing */
+  /* text-align: left; */
+  /* width: 17em; */
+}
+
+/* .home-button.primary:hover {
+  background-color: rgba(190, 95, 41, 1);
   color: white;
+} */
+
+.home-button.primary:hover:not(:disabled) {
+  background-color: rgba(190, 95, 41, 1); 
+  color: white;
+}
+
+
+.home-button.secondary {
+  background-color: #9ab5be;
+  color: black;
   font-weight: bold;
   font-family: inherit;
 }
 
-.home-button.secondary:hover {
-  background-color: #007bff;
+.home-button.secondary:hover:not(:disabled) {
+  background-color: rgba(15, 78, 123, 1);
+  color: white;
 }
 
-/* Responsive: Stack on mobile (from Figma mobile frames) */
+.home-button.tertiary {
+  background-color: #7d9e6d;
+  color: black;
+  font-weight: bold;
+  font-family: inherit;
+}
+
+.home-button.tertiary:hover:not(:disabled) {
+  background-color: #547046;
+  color: white;
+}
+
+.home-button.primary:disabled, .home-button.secondary:disabled, .home-button.tertiary:disabled {
+  background-color: #6c757d; 
+  cursor: not-allowed;
+}
+
+
 @media (max-width: 768px) {
   .home-page {
     flex-direction: column;
@@ -102,23 +156,25 @@
 
   .home-left-panel,
   .home-right-panel {
+    align-items: center;
     flex: none;
-    width: 100%;
-    padding: 0;
+    padding: 0.5em;
   }
 
   .home-dog-image {
-    width: 12em;
     height: 18em;
-    
     border-radius: 5.5em;
   }
 
-  /* .home-logo {
-    font-size: 2.5rem;
-  } */
+  .error-message {
+  text-align: center;
+}
 
-  .home-welcome {
-    font-size: 2rem;
-  }
+.nameLabel, .passwordLabel {
+ 
+  width: 17em;
+
+}
+
+
 }
