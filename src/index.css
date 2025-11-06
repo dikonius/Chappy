@@ -12,4 +12,12 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* global variables */
+  
+  --profile-bg: rgba(153, 217, 249, 1);
+  --profile-text: black;
+  --primary-color: #4CAF50;
+  --secondary-color: #FF5722;
+  --font-size-large: 1.5rem;
 }

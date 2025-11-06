@@ -4,23 +4,14 @@ import './homePage.css';
 import { useNavigate } from 'react-router-dom';
 import chappyLogo from '../assets/chappy-logo.png';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
-
-interface FormData {
-  name: string;
-  password: string;
-}
-
-interface ValidationErrors {
-  name?: string;
-  password?: string;
-}
+import type { FormData, ValidationErrors } from '../../srcServer/data/types.ts';
 
 const LS_KEY = 'token'; 
 
 const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({ name: '', password: '' });
-  const [nameError, setNameError] = useState<string>('');  // Separate error for name
-  const [passwordError, setPasswordError] = useState<string>('');  // Separate error for password
+  const [nameError, setNameError] = useState<string>('');  
+  const [passwordError, setPasswordError] = useState<string>('');  
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
@@ -28,7 +19,7 @@ const LoginPage: React.FC = () => {
     navigate('/guest');
   };
 
-  // Basic frontend validation (returns errors for each field, shows all at once)
+
   const validateForm = (data: FormData): ValidationErrors => {
     const errors: ValidationErrors = {};
     if (data.name.trim().length < 1) {

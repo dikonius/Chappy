@@ -19,6 +19,15 @@ interface LoginBody {
   password: string;
 }
 
+interface FormData {
+  name: string;
+  password: string;
+}
+
+interface ValidationErrors {
+  name?: string;
+  password?: string;
+}
 
 interface User {
   pk: string;           
@@ -103,6 +112,7 @@ interface ChannelsResponse {
   channels: Channel[];
 }
 
+
 // Error Messages (centralized for controllers;)
 const ERROR_MESSAGES = {
   AUTH_REQUIRED: 'Authentication required to send DMs' as const,
@@ -110,6 +120,6 @@ const ERROR_MESSAGES = {
   LOCKED_CHANNEL: 'Login required for locked channels' as const,
 } as const;
 
-export type { AuthRequest, User, LoginBody, LoginResponse, JwtPayload, MessageResponse, MessageType, ChannelsResponse, Channel, MessagesResponse, FormattedMessage, ChannelMessage, DmMessage, Message}
+export type { AuthRequest, User, LoginBody, LoginResponse, JwtPayload, MessageResponse, MessageType, ChannelsResponse, Channel, MessagesResponse, FormattedMessage, ChannelMessage, DmMessage, Message, FormData, ValidationErrors}
 
 export {MESSAGE_TYPES, ERROR_MESSAGES}

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';  // For navigation to channels/DMs
 import '../App.css';
 import './dashboardPage.css';  // Import the new CSS
 import chappyLogo from '../assets/chappy-logo.png';
+import { getColorFromName } from '../utils/NameColors';
 
 const DashboardPage: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
@@ -13,23 +14,23 @@ const DashboardPage: React.FC = () => {
   const [usersExpanded, setUsersExpanded] = useState<boolean>(false);  // Toggle for users
   const [channelsExpanded, setChannelsExpanded] = useState<boolean>(false);  // Toggle for channels
 
-  // Load userName from localStorage on mount
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
-    if (token && user) {
-      const parsedUser = JSON.parse(user);
-      setUserName(parsedUser.name || 'user');
-    } else {
-      setUserName('guest');
-    }
-  }, []);
-
-  // Fetch users and channels on mount
+  // Load userName and fetch data (merged useEffect)
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
+
+      // Load userName from localStorage
+      const token = localStorage.getItem('token');
+      const user = localStorage.getItem('user');
+      let currentId = '';
+      if (token && user) {
+        const parsedUser = JSON.parse(user);
+        setUserName(parsedUser.name || 'user');
+        currentId = parsedUser.id || '';
+      } else {
+        setUserName('guest');
+      }
 
       try {
         // Fetch channels (public)
@@ -41,7 +42,6 @@ const DashboardPage: React.FC = () => {
         setChannels(channelsData.channels || []);
 
         // Fetch users (protected – add Authorization header if token available)
-        const token = localStorage.getItem('token');
         const usersRes = await fetch('/api/user', {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -51,7 +51,10 @@ const DashboardPage: React.FC = () => {
           throw new Error('Failed to fetch users');
         }
         const usersData = await usersRes.json();
-        setUsers(usersData.users || []);
+        const allUsers = usersData.users || [];
+        // Filter out the current logged-in user
+        const filteredUsers = allUsers.filter((user: any) => user.id !== currentId);
+        setUsers(filteredUsers);
       } catch (err) {
         setError('Failed to load data: ' + (err as Error).message);
       } finally {
@@ -60,7 +63,7 @@ const DashboardPage: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, []);  // Empty dependency array: only run on initial mount
 
   if (loading) {
     return <div className="loading-placeholder"><p>Loading...</p></div>;
@@ -79,14 +82,14 @@ const DashboardPage: React.FC = () => {
       {/* Header – Dynamic user name ("guest" or logged-in name) */}
       <header className="dashboard-header">
         <div className="header-left">
-          <button className="user-name-btn">{userName}</button>
+          <Link to="/profile" className="user-name-btn">{userName}</Link>
         </div>
         <div className="header-right">
         </div>
       </header>
 
       <div className="dashboard-main">
-        {/* Left Sidebar: Users (no avatars/status) */}
+        {/* Left Sidebar: Users (no avatars/status, exclude self) */}
         <aside className="sidebar-users">
           <div className="sidebar-section-header">
             <button className="section-title-btn" onClick={() => setUsersExpanded(!usersExpanded)}>
@@ -96,7 +99,7 @@ const DashboardPage: React.FC = () => {
           <ul className="users-list">
             {visibleUsers.map((user) => (
               <li key={user.id} className="user-item">
-                <Link to={`/dm/${user.id}`} className="user-link">
+                <Link to={`/dm/${user.id}`} className="user-item" style={{ backgroundColor: getColorFromName(user.name) }}>
                   <span className="user-name">{user.name}</span>
                 </Link>
               </li>

@@ -7,22 +7,26 @@ import jwt from 'jsonwebtoken';
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
     const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith('Bearer ')) {
-      return res.status(401).json({ message: 'Missing or invalid token' });
-    }
+    let payload: JwtPayload | null = null;
 
-    const token = authHeader.slice(7).trim();
-    const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret) {
-      console.error('JWT_SECRET is not set');
-      return res.status(500).json({ message: 'Server configuration error' });
-    }
+    if (authHeader?.startsWith('Bearer ')) {
+      const token = authHeader.slice(7).trim();
+      const jwtSecret = process.env.JWT_SECRET;
 
-    const decoded = jwt.verify(token, jwtSecret);
-    if (typeof decoded === 'string') {
-      throw new Error('Invalid token format');
+      if (!jwtSecret) {
+        console.error('JWT_SECRET is not set');
+        return res.status(500).json({ message: 'Server configuration error' });
+      }
+
+      try {
+        const decoded = jwt.verify(token, jwtSecret);
+        if (typeof decoded !== 'string') {
+          payload = decoded as JwtPayload;
+        }
+      } catch (err) {
+        console.warn('Invalid or expired token, proceeding as guest');
+      }
     }
-    const payload = decoded as JwtPayload;
 
     const { Items } = await db.send(new QueryCommand({
       TableName: tableName,
@@ -36,9 +40,13 @@ export const getAllUsers = async (req: Request, res: Response) => {
       ProjectionExpression: 'userId, #n'  // Use alias #n for 'name'
     }));
 
-    const users = Items?.map(item => ({ id: item.userId, name: item.name })) || [];  // DynamoDB returns original 'name'
+    const users = Items?.map(item => ({ id: item.userId, name: item.name })) || [];
 
-    res.json({ success: true, users });
+    res.json({ 
+      success: true, 
+      users, 
+      user: payload ? payload.userId : null  // Optional: Include info about the requesting user
+    });
   } catch (error) {
     console.error('Get all users error:', (error as Error).message);
     res.status(500).json({ success: false, message: 'Server error' });

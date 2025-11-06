@@ -173,14 +173,32 @@
   cursor: not-allowed;
 }
 
+.profile-username {
+  background-color: var(--profile-bg); 
+  color: var(--profile-text);
+  display: flex;
+  border: none;
+  padding: 0.5em;
+  cursor: pointer;
+  border-radius: 15px;
+  font-size: 1.2em;
+  font-weight: bold;
+  width: 10em;
+  justify-content: center;
+  margin-bottom: 0.5em;
+}
 
 @media (max-width: 768px) {
   .home-page {
     flex-direction: column;
     justify-content: center;
+    height: fit-content;
   }
 
-  .home-left-panel,
+  .home-left-panel {
+    display: none;
+  }
+  
   .home-right-panel {
     align-items: center;
     flex: none;
