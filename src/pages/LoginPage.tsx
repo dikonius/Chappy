@@ -3,6 +3,7 @@ import '../App.css';
 import './homePage.css';
 import { useNavigate } from 'react-router-dom';
 import chappyLogo from '../assets/chappy-logo.png';
+import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 
 interface FormData {
   name: string;
@@ -14,7 +15,7 @@ interface ValidationErrors {
   password?: string;
 }
 
-const LS_KEY = 'token'; // Standardized to match ProtectedRoute and other components
+const LS_KEY = 'token'; 
 
 const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({ name: '', password: '' });
@@ -30,11 +31,17 @@ const LoginPage: React.FC = () => {
   // Basic frontend validation (returns errors for each field, shows all at once)
   const validateForm = (data: FormData): ValidationErrors => {
     const errors: ValidationErrors = {};
-    if (data.name.trim().length < 4) {
-      errors.name = 'Name must be at least 4 characters';
+    if (data.name.trim().length < 1) {
+      errors.name = 'Name must be at least 1 character';
+    }
+    if (data.name.trim().length > 50) {
+      errors.name = "Name can't be longer than 50 characters";
     }
     if (data.password.length < 8) {
       errors.password = 'Password must be at least 8 characters';
+    }
+    if (data.password.length > 50) {
+      errors.password = "Password can't be longer than 50 characters";
     }
     return errors;
   };
@@ -112,6 +119,7 @@ const LoginPage: React.FC = () => {
     }
   };
 
+  const [showPassword, setShowPassword] = useState(false);
   const handleSubmitRegister = () => handleSubmit('/api/register', 'Registration');
   const handleSubmitLogin = () => handleSubmit('/api/login', 'Login');
 
@@ -133,16 +141,26 @@ const LoginPage: React.FC = () => {
             disabled={isLoading}
           />
           <span className="error-message">{nameError}</span>
-
+          
           <label htmlFor="password" className="passwordLabel">Password</label>
-          <input
-            id="password"
-            type="password"
-            placeholder="Enter password"
-            onChange={(event) => setFormData({ ...formData, password: event.target.value })}
-            value={formData.password}
-            disabled={isLoading}
-          />
+          <div className="password-input-container">
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter password"
+              onChange={(event) => setFormData({ ...formData, password: event.target.value })}
+              value={formData.password}
+              disabled={isLoading}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="toggle-password-button"
+              aria-label="Toggle password visibility"
+            >
+              {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
+            </button>
+          </div>
           <span className="error-message">{passwordError}</span>
 
           <button

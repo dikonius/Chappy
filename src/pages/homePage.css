@@ -78,7 +78,7 @@
 
 .nameLabel, .passwordLabel {
   font-size: 1em;
-  color: #9ab5be; /* White for dark bg */
+  color: #9ab5be; 
   margin-bottom: 0.5em;
   font-weight: 900;
   width: 17em;
@@ -90,18 +90,44 @@
   border: none;
   border-radius: 4px;
   font-size: 1em;
-  margin-bottom: 0.5em; /* Space for error below */
+  margin-bottom: 0.5em; 
   background-color: #fff;
   color: #333;
   font-family: inherit;
   width: 17em;
-  box-sizing: border-box;
 }
+
+#password {
+  padding-right: 2.5em;
+}
+
+.password-input-container {
+  position: relative;
+}
+
+.toggle-password-button {
+  position: absolute;
+  right: 0.5em;
+  bottom: 1em;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgba(15, 78, 123, 1);
+  font-size: 1.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-password-button:hover {
+  color: #000;
+}
+
 
 .error-message {
   color: #f50808; /* Red for errors */
   font-size: 0.9em;
-  min-height: 1.2em; /* Reserved space – always takes this height */
+  min-height: 1.3em; /* Reserved space – always takes this height */
   margin-bottom: 1em; /* Consistent spacing */
   /* text-align: left; */
   /* width: 17em; */

@@ -1,0 +1,256 @@
+.dashboard-page {
+  height: 100vh;
+  background-color: rgba(56, 54, 54, 1); /* Dark gray from home-page bg */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1em 2em;
+  background-color: rgba(56, 54, 54, 1); /* 
+  /* border-bottom: 1px solid #333; */
+  color: #fff;
+}
+
+/* .header-left {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+} */
+
+.user-name {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #007bff; /* Blue from home-logo */
+}
+
+/* .header-right {
+  font-size: 1em;
+  color: #ccc;
+} */
+
+/* .time {
+  font-size: 1em;
+  color: #ccc;
+} */
+
+.dashboard-main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.sidebar-users, .sidebar-channels {
+  width: 250px;
+  background-color: rgba(56, 54, 54, 1); 
+  /* border-right: 1px solid #333; */
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+/* .sidebar-channels {
+  border-left: 1px solid #333;
+} */
+
+.sidebar-section-header {
+  padding: 1em;
+  /* border-bottom: 1px solid #333; */
+  display: flex;
+  justify-content: center;
+}
+
+.section-title-btn {
+  background-color: rgb(80, 79, 79); 
+  color: white;
+  border: none;
+  padding: 1em;
+  cursor: pointer;
+  border-radius: 15px;
+  font-size: 0.9em;
+  font-weight: bold;
+  width: 10em;
+  text-align: center;
+}
+
+.section-title-btn:hover {
+  background-color: rgba(0, 123, 255, 0.8);
+}
+
+.section-title-btn::after {
+  content: attr(data-arrow); /* Dynamic arrow from button text */
+  margin-left: auto;
+  font-weight: normal;
+}
+
+.user-name-btn {
+    background-color: rgba(153, 217, 249, 1); 
+  color: black;
+  border: none;
+  padding: 0.5em;
+  cursor: pointer;
+  border-radius: 15px;
+  font-size: 1.2em;
+  font-weight: bold;
+  width: 10em;
+  text-align: center;
+}
+
+.section-title-btn:hover {
+  /* background-color: rgba(0, 123, 255, 0.8); */
+  background-color: #01416d;
+}
+.user-name-btn:hover {
+  background-color: #9ab5be;
+  color: black;
+}
+
+.users-list, .channels-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.user-item, .channel-item {
+  padding: 0.75em 1em;
+  /* border-bottom: 1px solid #333; */
+  cursor: pointer;
+  transition: background-color 0.2s; 
+  color: black;
+  border: none;
+  padding: 0.5em;
+  cursor: pointer;
+  border-radius: 15px;
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+  /* width: 15em; */
+}
+
+.user-item:last-child, .channel-item:last-child {
+    margin-bottom: 0;
+}
+
+.channel-item {
+      /* border-bottom: 1px solid #333; */
+    background-color: black;
+    margin-right: 0.5em;
+}
+
+.user-item {
+  margin-left: 0.5em;
+  border-bottom: 1px solid rgb(128, 128, 128);
+}
+
+.user-item:hover, .channel-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.user-link, .channel-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.user-name {
+  color: #fff;
+  font-size: 1em;
+}
+
+.channel-name {
+  flex: 1;
+  color: #fff;
+  font-size: 1em;
+}
+
+.channel-item.locked .channel-name {
+  color: #ff6b6b; /* Red for locked */
+}
+
+.lock-icon {
+  font-size: 1em;
+  margin-left: 0.5em;
+}
+
+.dashboard-content {
+  flex: 1;
+  background-color: rgba(56, 54, 54, 1); 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1em;
+  overflow-y: auto;
+  text-align: center;
+}
+
+.p-dashboard {
+    color: #ccc;
+    font-size: 1.2em;
+}
+
+.main-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #ccc;
+  font-size: 1.2em;
+}
+
+/* @media (max-width: 1087px) {
+
+} */
+
+@media (max-width: 768px) {
+  .dashboard-main {
+    flex-direction: column;
+  }
+
+  .dashboard-content {
+  overflow-y:visible;
+ 
+}
+  
+
+.channel-item {
+    margin-left: 0.5em;
+}
+
+.user-item {
+  margin-right: 0.5em;
+}
+
+  .sidebar-users, .sidebar-channels {
+    width: 100%;
+    height: 200px;
+  }
+
+  .dashboard-header {
+    padding: 0.5em 1em;
+  }
+
+  .user-name {
+    font-size: 1em;
+  }
+
+  .user-item, .channel-item {
+    padding: 0.5em 1em;
+  }
+}
+
+@media (max-width: 480px) {
+    .dashboard-content {
+    display: none;
+  }
+  .sidebar-users, .sidebar-channels {
+  flex:none;
+  height: fit-content;
+ 
+}
+}
