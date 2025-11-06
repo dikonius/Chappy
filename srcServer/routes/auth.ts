@@ -10,9 +10,10 @@ const router = Router();
 // Public auth
 router.post('/login', loginUser);
 router.post('/register', registerUser);
+router.get('/user', getAllUsers);
 
 // Protected
 router.get('/secret', authMiddleware, getSecret);
-router.get('/user', authMiddleware, getAllUsers);
+
 
 export default router;
