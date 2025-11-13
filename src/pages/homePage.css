@@ -67,6 +67,45 @@
   margin-bottom: 1em;
   font-family: inherit;
 }
+.guest-btn {
+  padding: 0.5em;
+  border-radius: 15px;
+  font-size: 1.2em;
+  font-weight: bold;
+  justify-content: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 10em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 1em;
+  font-family: inherit;
+  background-color: rgba(153, 217, 249, 1);
+  color: black;
+  text-decoration: none;
+}
+
+.logout-button {
+  width: 13em;
+  height: 3em;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 1em;
+  font-family: inherit;
+  background-color: #ad5b5b;
+  color: white;
+  margin-top: 1em;
+}
+
+.logout-button:hover {
+  background-color: #e65353;
+  color: black;
+}
 
 .home-button.primary {
   background-color: #da9548;
@@ -173,31 +212,17 @@
   cursor: not-allowed;
 }
 
-.profile-username {
-  background-color: var(--profile-bg); 
-  color: var(--profile-text);
-  display: flex;
-  border: none;
-  padding: 0.5em;
-  cursor: pointer;
-  border-radius: 15px;
-  font-size: 1.2em;
-  font-weight: bold;
-  width: 10em;
-  justify-content: center;
-  margin-bottom: 0.5em;
-}
+
 
 @media (max-width: 768px) {
   .home-page {
     flex-direction: column;
     justify-content: center;
-    height: fit-content;
+    align-items: center;
+    height: 100vh;
   }
 
-  .home-left-panel {
-    display: none;
-  }
+  
   
   .home-right-panel {
     align-items: center;

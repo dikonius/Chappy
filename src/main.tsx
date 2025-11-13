@@ -10,7 +10,7 @@ import DashboardPage from './pages/DashboardPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import ProfilePage from './pages/ProfilePage';
 import DmPage from './pages/DmPage';
-import ChannelPage from './pages/ChannelPage';
+import ChatPage from './pages/ChatPage';
 
 
 const router = createHashRouter([
@@ -27,8 +27,8 @@ const router = createHashRouter([
         element: <GuestPage />,
       },
       {
-        path: '/channel',
-        element: <ChannelPage />,
+        path: '/channel/:id',
+        element: <ChatPage />,
       },
       {
         path: '/login',
@@ -42,12 +42,12 @@ const router = createHashRouter([
             element: <DashboardPage />,
           },
           {
-            path: '/dm',
+            path: '/dm/:id',
             element: <DmPage />,
           },
           {
-            path: '/channel',
-            element: <ChannelPage />,
+            path: '/channel/:id',
+            element: <ChatPage />,
           },
           {
             path: '/profile',

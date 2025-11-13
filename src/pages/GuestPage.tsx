@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';  // For navigation to channels/DMs
 import '../App.css';
 import './dashboardPage.css';  // Import the new CSS
+import './homePage.css'
 import chappyLogo from '../assets/chappy-logo.png';
+import { getColorFromName } from '../utils/NameColors';
 
 const GuestPage: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
@@ -11,7 +13,7 @@ const GuestPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [usersExpanded, setUsersExpanded] = useState<boolean>(false);  // Toggle for users
   const [channelsExpanded, setChannelsExpanded] = useState<boolean>(false);  // Toggle for channels
-  const userName = 'guest';  // Hardcoded 'guest' for GuestPage
+
 
   // Fetch users and channels on mount (users optional for guests)
   useEffect(() => {
@@ -73,7 +75,7 @@ const GuestPage: React.FC = () => {
       {/* Header – Hardcoded 'guest' name */}
       <header className="dashboard-header">
         <div className="header-left">
-          <button className="user-name-btn">{userName}</button>
+          <Link to="/login" className="guest-btn">guest</Link>
         </div>
       </header>
 
@@ -85,21 +87,21 @@ const GuestPage: React.FC = () => {
               All users {usersExpanded ? '▼' : '▲'}
             </button>
           </div>
-          <ul className="users-list">
-            {visibleUsers.length > 0 ? (
-              visibleUsers.map((user) => (
-                <li key={user.id} className="user-item">
-                  <Link to={`/dm/${user.id}`} className="user-link">
-                    <span className="user-name">{user.name}</span>
-                  </Link>
-                </li>
-              ))
-            ) : (
-              <li className="empty-list">
-                <p>Login to see users</p>
-              </li>
-            )}
-          </ul>
+      <ul className="users-list">
+        {visibleUsers.map((user) => (
+          <li key={user.id} className="user-item disabled-item">
+            <button
+              className="user-item disabled"
+              style={{
+                backgroundColor: getColorFromName(user.name),
+              }}
+              disabled
+            >
+              <span className="user-name">{user.name}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
         </aside>
 
         {/* Main Content Area */}
@@ -116,14 +118,31 @@ const GuestPage: React.FC = () => {
             </button>
           </div>
           <ul className="channels-list">
-            {visibleChannels.map((channel) => (
-              <li key={channel.id} className={`channel-item ${channel.isLocked ? 'locked' : ''}`}>
-                <Link to={`/channel/${channel.id}`} className="channel-link">
-                  <span className="channel-name">{channel.name}</span>
-                  {channel.isLocked && <span className="lock-icon">🔒</span>}
-                </Link>
-              </li>
-            ))}
+            {visibleChannels.map((channel) => {
+              const isLocked = channel.isLocked;
+              const disabled = isLocked;
+
+              return (
+                <li
+                  key={channel.id}
+                  className={`channel-item ${isLocked ? 'locked disabled-item' : ''}`}
+                >
+                  {disabled ? (
+                    <button
+                      className="channel-link disabled"
+                      disabled
+                    >
+                      <span className="channel-name">{channel.name}</span>
+                      {isLocked && <span className="lock-icon">🔒</span>}
+                    </button>
+                  ) : (
+                    <Link to={`/channel/${channel.id}`} className="channel-link">
+                      <span className="channel-name">{channel.name}</span>
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </aside>
       </div>

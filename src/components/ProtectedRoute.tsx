@@ -1,23 +1,20 @@
 import { useEffect } from 'react';
-import { useNavigate, Outlet, type NavigateFunction,  } from 'react-router-dom';
+import { useNavigate, Outlet } from 'react-router-dom';
 import '../App.css';
-import LoadingSpinner from './LoadingSpinner';
+import { useAuthStore } from '../store/useAuthStore';
 
 const ProtectedRoute: React.FC = () => {
-  const navigate: NavigateFunction = useNavigate();
-  const token: string | null = localStorage.getItem('token'); // Explicitly typed as string | null
+  const { token } = useAuthStore();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!token) {
-      navigate('/login', { replace: true });
+      navigate('/login');
     }
-  }, [navigate, token]);
+  }, [token, navigate]);
 
-  if (!token) {
-    return <LoadingSpinner size="medium" color="#your-app-blue" />;
-  }
-
-  return <Outlet />; // Renders the child route elements
+  if (!token) return null;
+  return <Outlet />;
 };
 
 export default ProtectedRoute;

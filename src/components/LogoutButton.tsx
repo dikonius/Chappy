@@ -19,7 +19,7 @@ const LogoutButton: React.FC = () => {
     return (
         
         <button
-            className="Login-button"
+            className="logout-button"
             onClick={handleLogout}
             role="button"
             tabIndex={0}

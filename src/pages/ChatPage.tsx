@@ -2,87 +2,61 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import '../App.css';
-import './dmPage.css';
+import './chatPage.css';
 
-interface Message {
-  id: string;
-  content: string;
-  senderId: string;
-  timestamp: string;
-}
-
-interface User {
-  id: string;
-  name: string;
-}
-
-const DmPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();  // receiverId from path
+const ChatPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>(); // ✅ match route param
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [usersMap, setUsersMap] = useState<Record<string, string>>({});  // id -> name
-  const [receiverName, setReceiverName] = useState<string>(id || 'Unknown');  // Name for header
+  const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [sending, setSending] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Fetch DMs and user names
+  // Fetch messages
   useEffect(() => {
-    if (!id) return;
 
     const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
+    const user = localStorage.getItem('user');
 
-    const fetchData = async () => {
+    if (!token || !user) {
+        navigate('/login'); 
+        return;
+      }
+
+      
+    if (!id) return;
+
+    const fetchMessages = async () => {
       setLoading(true);
       setError(null);
-
+      const token = localStorage.getItem('token');
       try {
-        // Fetch messages
-        const messagesRes = await fetch(`/api/dm/${id}`, {
-          headers: { 'Authorization': `Bearer ${token}` },
+        const res = await fetch(`/api/channel/${id}`, {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {},
         });
-        if (!messagesRes.ok) {
-          if (messagesRes.status === 401) {
-            setError('Session expired — please log in again');
+
+        if (!res.ok) {
+          if (res.status === 403) {
+            setError('Login required for this channel');
           } else {
             throw new Error('Failed to load messages');
           }
         } else {
-          const messagesData = await messagesRes.json();
-          setMessages(messagesData.messages || []);
-
-          // Fetch all users for names mapping
-          const usersRes = await fetch('/api/users', {
-            headers: { 'Authorization': `Bearer ${token}` },
-          });
-          if (usersRes.ok) {
-            const usersData: { users: User[] } = await usersRes.json();
-            const map: Record<string, string> = {};
-            (usersData.users || []).forEach((user: User) => {
-              map[user.id] = user.name;
-            });
-            setUsersMap(map);
-            // Set receiver name
-            setReceiverName(map[id] || id);
-          }
+          const data = await res.json();
+          setMessages(data.messages || []);
         }
-      } catch (err) {
+      } catch {
         setError('Network error');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
-  }, [id, navigate]);
+    fetchMessages();
+  }, [id]);
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -92,14 +66,8 @@ const DmPage: React.FC = () => {
 
     setSending(true);
     const token = localStorage.getItem('token');
-    if (!token) {
-      setError('Login required');
-      setSending(false);
-      return;
-    }
-
     try {
-      const res = await fetch(`/api/dm/${id}/send`, {
+      const res = await fetch(`/api/channel/${id}/send`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -109,8 +77,8 @@ const DmPage: React.FC = () => {
       });
 
       if (!res.ok) {
-        if (res.status === 401) {
-          setError('Session expired — please log in again');
+        if (res.status === 403) {
+          setError('Login required to send messages');
         } else {
           throw new Error('Failed to send message');
         }
@@ -121,13 +89,13 @@ const DmPage: React.FC = () => {
           {
             id: data.timestamp,
             content: newMessage.trim(),
-            senderId: 'self',  // Frontend placeholder
+            senderId: 'self',
             timestamp: data.timestamp,
           },
         ]);
         setNewMessage('');
       }
-    } catch (err) {
+    } catch {
       setError('Network error');
     } finally {
       setSending(false);
@@ -137,19 +105,21 @@ const DmPage: React.FC = () => {
   if (loading) return <LoadingSpinner size="large" />;
 
   return (
-    <div className="dm-page">
-      <header className="dm-header">
-        <h1>DM with {receiverName}</h1>
+    <div className="chat-page">
+      <header className="chat-header">
+        <h1># {id}</h1>
         <button onClick={() => navigate('/dashboard')}>Back</button>
       </header>
 
-      <div className="dm-messages">
+      <div className="chat-messages">
         {messages.length > 0 ? (
           messages.map((msg) => (
-            <div key={msg.id} className={`message-item ${msg.senderId === 'Me ' ? 'sent' : 'received'}`}>
+            <div
+              key={msg.id}
+              className={`message-item ${msg.senderId === 'self' ? 'sent' : 'received'}`}
+            >
               <div className="message-bubble">
                 <p>{msg.content}</p>
-                <span className="message-sender">{usersMap[msg.senderId] || msg.senderId}</span>
                 <span className="message-time">
                   {new Date(msg.timestamp).toLocaleTimeString()}
                 </span>
@@ -164,9 +134,9 @@ const DmPage: React.FC = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {error && <div className="dm-error">{error}</div>}
+      {error && <div className="chat-error">{error}</div>}
 
-      <div className="dm-input-section">
+      <div className="chat-input-section">
         <textarea
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
@@ -183,4 +153,4 @@ const DmPage: React.FC = () => {
   );
 };
 
-export default DmPage;
+export default ChatPage;

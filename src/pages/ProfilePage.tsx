@@ -4,6 +4,7 @@ import './homePage.css';
 import './profilePage.css';
 import { useNavigate } from 'react-router-dom';
 import chappyLogo from '../assets/chappy-logo.png';
+import LogoutButton from '../components/LogoutButton';
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ const ProfilePage: React.FC = () => {
   const [textColor, setTextColor] = useState<string>('#000000');  // Fallback black
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isGuest, setIsGuest] = useState<boolean>(false);  // Check guest mode
+  const [userName, setUserName] = useState<string>('guest');  // Default 'guest'
 
   // 21 predefined colors for BG only
   const bgColors = [
@@ -24,10 +26,24 @@ const ProfilePage: React.FC = () => {
   // Text colors: Only black or white
   const textColors = ['#000000', '#FFFFFF'];
 
-  // Load saved colors from localStorage on mount, fallback for guests only
+  // Load saved colors and userName from localStorage on mount, fallback for guests only
   useEffect(() => {
     const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
     setIsGuest(!token);
+
+    // Load userName from localStorage
+    if (user) {
+      try {
+        const parsedUser = JSON.parse(user);
+        setUserName(parsedUser.name || 'user');
+      } catch (error) {
+        console.error('Profile - user parse error:', error);
+        setUserName('user');
+      }
+    } else {
+      setUserName('guest');
+    }
 
     if (!token) {
       // Guests always use fallback
@@ -37,6 +53,7 @@ const ProfilePage: React.FC = () => {
       return;
     }
 
+    // User mode: load saved or default to first color
     try {
       const saved = localStorage.getItem('profileColors');
       if (saved) {
@@ -89,23 +106,26 @@ const ProfilePage: React.FC = () => {
   };
 
   return (
-    <div className="home-page">
-      <div className="home-left-panel">
+    <div className="profile-page">
+      <div className="profile-left-panel">
         <img src={chappyLogo} alt="Chappy logo" className="home-dog-image" />
       </div>
-      <div className="home-right-panel">
+      <div className="profile-right-panel">
         <h2 className='profile-h2'>Profile Settings</h2>
+        <div className="user-name-display">
+          <span className="user-name-btn">{userName}</span>
+        </div>
+        <LogoutButton/>
         
-        <p className='profile-color-label'>Current Background Color</p>
-        <input
-            className='color-input'
-            type="color"
-            value={bgColor}
-            onChange={(e) => handleColorChange('bg', e.target.value)}
-            disabled={isGuest}
-          />
+        <p className='profile-color-label'> Background Color </p>
+        {/* <input
+          className='color-input'
+          type="color"
+          value={bgColor}
+          onChange={(e) => handleColorChange('bg', e.target.value)}
+          disabled={isGuest}
+        /> */}
         <div className="color-section">
-          
           <div className="color-palette">
             {bgColors.map((color) => (
               <label key={color} className="color-radio-label">
@@ -121,17 +141,16 @@ const ProfilePage: React.FC = () => {
               </label>
             ))}
           </div>
-          
         </div>
         
-        <p className='profile-color-label'>Current Text Color</p>
-        <input
-            className='color-input'
-            type="color"
-            value={textColor}
-            onChange={(e) => handleColorChange('text', e.target.value)}
-            disabled={isGuest}
-          />
+        <p className='profile-color-label'> Text Color </p>
+        {/* <input
+          className='color-input'
+          type="color"
+          value={textColor}
+          onChange={(e) => handleColorChange('text', e.target.value)}
+          disabled={isGuest}
+        /> */}
         <div className="color-section">
           <div className="color-palette">
             {textColors.map((color) => (
@@ -148,7 +167,6 @@ const ProfilePage: React.FC = () => {
               </label>
             ))}
           </div>
-          
         </div>
 
         <button
