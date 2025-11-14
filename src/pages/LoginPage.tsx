@@ -5,8 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import chappyLogo from '../assets/chappy-logo.png';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import type { FormData, ValidationErrors } from '../../srcServer/data/types.ts';
+import { useAuthStore } from '../store/useAuthStore';  // Add store import
 
-const LS_KEY = 'token'; 
+const LS_KEY = 'token';  // Keep for compatibility, but store handles persistence
 
 const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({ name: '', password: '' });
@@ -14,11 +15,12 @@ const LoginPage: React.FC = () => {
   const [passwordError, setPasswordError] = useState<string>('');  
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
+  const authStore = useAuthStore();  // Add store hook
 
   const handleGuestMode = () => {
+    authStore.setGuest();  // Use store action
     navigate('/guest');
   };
-
 
   const validateForm = (data: FormData): ValidationErrors => {
     const errors: ValidationErrors = {};
@@ -39,8 +41,7 @@ const LoginPage: React.FC = () => {
 
   // Shared success handler
   const handleSuccess = (data: { token: string; user: { id: string; name: string } }) => {
-    localStorage.setItem(LS_KEY, data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
+    authStore.setAuth(data.token, data.user);  // Use store action (auto-persists)
     setFormData({ name: '', password: '' });  // Clear form
     console.log('Operation successful');  // Replace with toast/UI feedback
     navigate('/dashboard');  // Redirect to protected dashboard after auth

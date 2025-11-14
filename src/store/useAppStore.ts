@@ -1,6 +1,13 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+interface Message {
+  id: string;
+  content: string;
+  senderId: string;
+  timestamp: string;
+}
+
 interface AuthState {
   token: string | null;
   user: { id: string; name: string } | null;
@@ -10,23 +17,25 @@ interface AuthState {
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>()(
+interface ChatState {
+  messages: Message[];
+  addMessage: (msg: Message) => void;
+  clearMessages: () => void;
+}
+
+export const useAppStore = create<AuthState & ChatState>()(
   persist(
-    (set) => ({  
+    (set) => ({
       token: null,
       user: null,
       isGuest: true,
       setAuth: (token, user) => set({ token, user, isGuest: false }),
       setGuest: () => set({ token: null, user: null, isGuest: true }),
       logout: () => set({ token: null, user: null, isGuest: true }),
+      messages: [],
+      addMessage: (msg) => set((state) => ({ messages: [...state.messages, msg] })),
+      clearMessages: () => set({ messages: [] }),
     }),
-    {
-      name: 'chappy-auth',
-      partialize: (state) => ({ 
-        token: state.token, 
-        user: state.user,
-        isGuest: state.isGuest   
-      }),
-    }
+    { name: 'chappy-app' }
   )
 );

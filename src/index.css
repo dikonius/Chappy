@@ -13,9 +13,9 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* global variables */
+  /* variables */
   
-  --profile-bg: rgba(153, 217, 249, 1);
+  --profile-bg: #9ab5c1;
   --profile-text: black;
   --primary-color: #4CAF50;
   --secondary-color: #FF5722;

@@ -1,9 +1,11 @@
-/* chatPage.css – Dark chat layout, messages bubble, input at bottom */
+
 .chat-page {
-  height: 100vh;
+  height: 90vh;
+  /* width: 70vw; */
   display: flex;
   flex-direction: column;
   background-color: rgba(56, 54, 54, 1); /* Dark from home */
+  border-radius: 5em;
 }
 
 .chat-header {
@@ -14,6 +16,7 @@
   background-color: rgba(0, 0, 0, 0.2);
   border-bottom: 1px solid #333;
   color: #fff;
+  border-radius: 3em 3em 0 0;
 }
 
 .chat-header h1 {
@@ -55,12 +58,14 @@
 
 .message-bubble {
   padding: 0.75rem 1rem;
+  min-width: 10em;
   border-radius: 18px;
   background-color: #007bff; /* Blue for sent, adjust for received */
 }
 
 .message-item.sent .message-bubble {
-  background-color: #da9548; /* Orange for sent */
+  background-color: var(--profile-bg);
+  color: var(--profile-text);
 }
 
 .message-bubble p {
@@ -95,6 +100,8 @@
   padding: 1rem;
   background-color: rgba(0, 0, 0, 0.2);
   border-top: 1px solid #333;
+  justify-content: center;
+  border-radius: 0 0 3em 3em;
 }
 
 .message-input {
@@ -132,6 +139,92 @@
   cursor: not-allowed;
 }
 
+/* --- MESSAGE CONTAINER LAYOUT --- */
+.message-item {
+  display: flex;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+/* Received (Left) */
+.message-item.received {
+  justify-content: flex-start;
+}
+
+/* Sent (Right) */
+.message-item.sent {
+  justify-content: flex-end;
+}
+
+/* --- MESSAGE BUBBLE --- */
+.message-bubble {
+  max-width: 70%;
+  padding: 0.6rem 1rem;
+  border-radius: 18px;
+  position: relative;
+ background-color: #2B2B2B;
+  color: white;
+}
+
+/* Sent bubble (your theme colors) */
+.message-item.sent .message-bubble {
+  background-color: var(--profile-bg);
+  color: var(--profile-text);
+}
+
+/* --- Tails (Triangle bubbles like Messenger) --- */
+.message-item.received .message-bubble::after {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: 10px;
+  width: 0;
+  height: 0;
+  border-right: 10px solid #2b2b2b; /* Same as bubble */
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+}
+
+.message-item.sent .message-bubble::after {
+  content: "";
+  position: absolute;
+  right: -8px;
+  top: 10px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid var(--profile-bg);
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+}
+
+/* --- MESSAGE GROUPING --- */
+.message-item.grouped .message-bubble {
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+.message-item.sent.grouped .message-bubble {
+  border-top-right-radius: 6px;
+}
+
+.message-item.received.grouped .message-bubble {
+  border-top-left-radius: 6px;
+}
+
+/* Hide tails on grouped messages */
+.message-item.grouped .message-bubble::after {
+  display: none;
+}
+
+/* Time aligned under the bubble */
+.message-time {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  margin-top: 2px;
+  text-align: right;
+}
+
+
 @media (max-width: 768px) {
   .chat-header {
     padding: 0.5rem 1rem;
@@ -152,4 +245,12 @@
   .message-item {
     max-width: 90%;
   }
+
+  .chat-page {
+  height: 100vh;
+}
+
+.chat-input-section, .chat-header {
+border-radius: 0;
+}
 }

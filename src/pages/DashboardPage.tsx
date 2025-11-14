@@ -4,35 +4,31 @@ import '../App.css';
 import './dashboardPage.css';
 import chappyLogo from '../assets/chappy-logo.png';
 import { getColorFromName } from '../utils/NameColors';
+import { useAuthStore } from '../store/useAuthStore';
 
 const DashboardPage: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [channels, setChannels] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [userName, setUserName] = useState<string>('');
   const [usersExpanded, setUsersExpanded] = useState<boolean>(false);
   const [channelsExpanded, setChannelsExpanded] = useState<boolean>(false);
 
   const navigate = useNavigate();
+  const { token, user } = useAuthStore();
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
 
-      const token = localStorage.getItem('token');
-      const user = localStorage.getItem('user');
-
-      // If no token/user — redirect to GuestPage (or login)
+      // If no token/user — redirect to login
       if (!token || !user) {
         navigate('/login'); 
         return;
       }
 
-      const parsedUser = JSON.parse(user);
-      setUserName(parsedUser.name || 'user');
-      const currentId = parsedUser.id || '';
+      const currentId = user.id || '';
 
       try {
         // Fetch public channels
@@ -59,7 +55,7 @@ const DashboardPage: React.FC = () => {
     };
 
     fetchData();
-  }, [navigate]);
+  }, [navigate, token, user]);
 
   if (loading) return <div className="loading-placeholder"><p>Loading...</p></div>;
   if (error) return <div className="error-placeholder">{error}</div>;
@@ -71,7 +67,7 @@ const DashboardPage: React.FC = () => {
     <div className="dashboard-page">
       <header className="dashboard-header">
         <div className="header-left">
-          <Link to="/profile" className="user-name-btn">{userName}</Link>
+          <Link to="/profile" className="user-name-btn">{user?.name || 'user'}</Link>
         </div>
       </header>
 
@@ -116,7 +112,6 @@ const DashboardPage: React.FC = () => {
               <li key={channel.id} className={`channel-item ${channel.isLocked ? 'orange' : ''}`}>
                 <Link to={`/channel/${channel.id}`} className="channel-link">
                   <span className="channel-name">{channel.name}</span>
-                  {/* {channel.isLocked && <span className="lock-icon">🔒</span>} */}
                 </Link>
               </li>
             ))}

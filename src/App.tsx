@@ -1,47 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
-import './App.css'
-import LoadingSpinner from './components/LoadingSpinner';
-
-// Auth hook
-const useAuth = () => {
-  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
-  const [user, setUser] = useState<any>(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null);
-
-  useEffect(() => {
-    // Listen for storage changes (e.g., from other tabs)
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'token') setToken(e.newValue);
-      if (e.key === 'user') setUser(e.newValue ? JSON.parse(e.newValue) : null);
-    };
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
-
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setToken(null);
-    setUser(null);
-  };
-
-  return { token, user, setToken, setUser, logout, isAuthenticated: !!token };
-};
+import './App.css';
+import { useAuthStore } from './store/useAuthStore';
 
 const App: React.FC = () => {
-  const { user, isAuthenticated } = useAuth();
-  const [isGuestMode, setIsGuestMode] = useState<boolean>(!isAuthenticated); // Toggle for guest (from Figma)
+  const { token, isGuest } = useAuthStore();
 
-  // Loading state while checking auth
-  if (!user && isAuthenticated) {
-    return <LoadingSpinner size="large" />;
-  }
+  // Load profile colors globally on app load + auth state change
+  useEffect(() => {
+    if (token && !isGuest) {
+      const saved = localStorage.getItem('profileColors');
+      if (saved) {
+        const { bg, text } = JSON.parse(saved);
+        document.documentElement.style.setProperty('--profile-bg', bg);
+        document.documentElement.style.setProperty('--profile-text', text);
+        return;
+      }
+    }
+
+    // Default colors
+    document.documentElement.style.setProperty('--profile-bg', 'rgba(153, 217, 249, 1)');
+    document.documentElement.style.setProperty('--profile-text', '#000000');
+  }, [token, isGuest]);
 
   return (
     <div className="app">
-        <div className="content-area">
-          <Outlet context={{ user, isGuestMode, setIsGuestMode }} /> {/* Pass props to child routes */}
-        </div>
+      <div className="content-area">
+        <Outlet />
+      </div>
     </div>
   );
 };

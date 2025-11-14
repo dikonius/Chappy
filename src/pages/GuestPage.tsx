@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';  // For navigation to channels/DMs
+import { Link } from 'react-router-dom';
 import '../App.css';
-import './dashboardPage.css';  // Import the new CSS
+import './dashboardPage.css';
 import './homePage.css'
 import chappyLogo from '../assets/chappy-logo.png';
 import { getColorFromName } from '../utils/NameColors';
+import { useAuthStore } from '../store/useAuthStore';
 
 const GuestPage: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [channels, setChannels] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [usersExpanded, setUsersExpanded] = useState<boolean>(false);  // Toggle for users
-  const [channelsExpanded, setChannelsExpanded] = useState<boolean>(false);  // Toggle for channels
+  const [usersExpanded, setUsersExpanded] = useState<boolean>(false);
+  const [channelsExpanded, setChannelsExpanded] = useState<boolean>(false);
 
+  const { token } = useAuthStore();
 
-  // Fetch users and channels on mount (users optional for guests)
+  // Fetch users and channels on mount
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -30,23 +32,17 @@ const GuestPage: React.FC = () => {
         const channelsData = await channelsRes.json();
         setChannels(channelsData.channels || []);
 
-        // Fetch users (protected – try with token if available, else skip)
-        const token = localStorage.getItem('token');
-        if (token) {
-          const usersRes = await fetch('/api/user', {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-          });
-          if (usersRes.ok) {
-            const usersData = await usersRes.json();
-            setUsers(usersData.users || []);
-          } else {
-            console.log('Users fetch failed for guest (expected if no token) – showing empty');
-            setUsers([]);  // Empty for guest, or fetch public users if endpoint updated
-          }
+        // Fetch users - try with or without token
+        const usersRes = await fetch('/api/user', {
+          ...(token && { headers: { 'Authorization': `Bearer ${token}` } })
+        });
+        
+        if (usersRes.ok) {
+          const usersData = await usersRes.json();
+          setUsers(usersData.users || []);
         } else {
-          setUsers([]);  // No token = guest, show empty or public list if backend allows
+          console.log('Users fetch failed – showing empty');
+          setUsers([]);
         }
       } catch (err) {
         setError('Failed to load data: ' + (err as Error).message);
@@ -56,7 +52,7 @@ const GuestPage: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, [token]);
 
   if (loading) {
     return <div className="loading-placeholder"><p>Loading...</p></div>;
@@ -89,9 +85,9 @@ const GuestPage: React.FC = () => {
           </div>
       <ul className="users-list">
         {visibleUsers.map((user) => (
-          <li key={user.id} className="user-item disabled-item">
+          <li key={user.id} className="user-item disabled">
             <button
-              className="user-item disabled"
+              className="user-link"
               style={{
                 backgroundColor: getColorFromName(user.name),
               }}

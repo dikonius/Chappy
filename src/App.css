@@ -1,6 +1,12 @@
 * {
+  
   margin: 0; padding: 0; box-sizing: border-box;
   font-family: "Happy Monkey", system-ui;
+}
+
+body {
+  height: 100%;
+  background-color: var(--app-bg, rgba(56, 54, 54, 1));
 }
 
 

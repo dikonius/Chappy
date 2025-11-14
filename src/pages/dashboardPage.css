@@ -3,6 +3,7 @@
   background-color: rgba(56, 54, 54, 1); /* Dark gray from home-page bg */
   display: flex;
   flex-direction: column;
+  align-items: center;
   /* overflow: hidden; */
 }
 
@@ -23,13 +24,14 @@
 }
 
 .sidebar-users, .sidebar-channels {
-  width: 250px;
+  /* width: 250px; */
   background-color: rgba(56, 54, 54, 1); 
   /* border-right: 1px solid #333; */
   display: flex;
-  flex: 1;
+  /* flex: 1; */
   flex-direction: column;
   overflow-y: auto;
+  align-items: center;
 }
 
 
@@ -99,7 +101,6 @@
   /* border-bottom: 1px solid #333; */
   cursor: pointer;
   transition: background-color 0.2s; 
-  color: black;
   border: none;
   text-decoration: none;
   padding: 0.5em;
@@ -110,9 +111,20 @@
   margin-bottom: 0.5em;
   display: flex;
   width: 17.2em;
+  display: flex;
+  color: inherit;
+  background-color: black;
+  border: none;
+  justify-content: center;
+  align-items: center;
 
 }
 
+.user-list, .channel-list {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 
 .user-item:last-child, .channel-item:last-child {
@@ -121,32 +133,22 @@
 
 .channel-item {
       /* border-bottom: 1px solid #333; */
-    background-color: black;
+    /* background-color: black; */
     margin-right: 0.5em;
     border-radius: 15px;
 }
 
-/* .user-item {
+.user-item {
   margin-left: 0.5em;
   border-bottom: 1px solid rgb(128, 128, 128);
-} */
-
-.user-item:hover, .channel-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.user-link, .channel-link {
-  display: block;
-  color: inherit;
-  text-decoration: none;
-  background-color: black;
+  display: flex;
   border: none;
 }
 
-/* .user-link {
-  display: flex;
+.user-link:hover, .channel-link:hover {
+  background-color: rgba(3, 89, 102, 0.452);
+}
 
-} */
 
 .user-name {
   color: rgb(6, 6, 6);
@@ -171,7 +173,7 @@
 }
 
 .dashboard-content {
-  flex: 1;
+  /* flex: 1; */
   background-color: rgba(56, 54, 54, 1); 
   display: flex;
   flex-direction: column;
