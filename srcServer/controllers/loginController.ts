@@ -23,9 +23,9 @@ export const loginUser = async (req: Request<{}, {}, LoginBody>, res: Response<L
     try {
         const { Items } = await db.send(new QueryCommand({
             TableName: tableName,
-            IndexName: 'user-name-index',  // New GSI (partition key 'name')
+            IndexName: 'user-name-index',  
             KeyConditionExpression: '#name = :name',
-            ExpressionAttributeNames: { '#name': 'name' },  // Alias for reserved keyword
+            ExpressionAttributeNames: { '#name': 'name' },  
             ExpressionAttributeValues: { ':name': name },
         }));
 

@@ -5,6 +5,7 @@ import './dashboardPage.css';
 import chappyLogo from '../assets/chappy-logo.png';
 import { getColorFromName } from '../utils/NameColors';
 import { useAuthStore } from '../store/useAuthStore';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const DashboardPage: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
@@ -57,7 +58,14 @@ const DashboardPage: React.FC = () => {
     fetchData();
   }, [navigate, token, user]);
 
-  if (loading) return <div className="loading-placeholder"><p>Loading...</p></div>;
+  if (loading) {
+    return (
+      <div className="loading-center">
+        <LoadingSpinner size="large" centered />
+      </div>
+    );
+  }
+
   if (error) return <div className="error-placeholder">{error}</div>;
 
   const visibleUsers = usersExpanded ? users : users.slice(0, 3);

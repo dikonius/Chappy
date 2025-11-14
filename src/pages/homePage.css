@@ -21,14 +21,6 @@
   object-fit: contain;
 }
 
-/* .home-logo {
-  font-size: 3em;
-  font-weight: bold;
-  color: #007bff; 
-  margin: 0;
-  text-align: center;
-} */
-
 .home-right-panel {
   flex: 1;
   display: flex;
@@ -47,13 +39,6 @@
   text-align: center;
 }
 
-/* .home-subtitle {
-  font-size: 1.2em;
-  color: #23301d;
-  margin-bottom: 2em;
-  text-align: center;
-  max-width: 18em;
-} */
 
 .home-button {
   width: 13em;
@@ -164,18 +149,14 @@
 
 
 .error-message {
-  color: #f50808; /* Red for errors */
+  color: #f50808;
   font-size: 0.9em;
-  min-height: 1.3em; /* Reserved space – always takes this height */
-  margin-bottom: 1em; /* Consistent spacing */
+  min-height: 1.3em; 
+  margin-bottom: 1em; 
   /* text-align: left; */
   /* width: 17em; */
 }
 
-/* .home-button.primary:hover {
-  background-color: rgba(190, 95, 41, 1);
-  color: white;
-} */
 
 .home-button.primary:hover:not(:disabled) {
   background-color: rgba(190, 95, 41, 1); 

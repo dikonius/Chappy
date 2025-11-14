@@ -5,9 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import chappyLogo from '../assets/chappy-logo.png';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import type { FormData, ValidationErrors } from '../../srcServer/data/types.ts';
-import { useAuthStore } from '../store/useAuthStore';  // Add store import
+import { useAuthStore } from '../store/useAuthStore';  
+import LoadingSpinner from '../components/LoadingSpinner.tsx';
 
-const LS_KEY = 'token';  // Keep for compatibility, but store handles persistence
+const LS_KEY = 'token';  
 
 const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({ name: '', password: '' });
@@ -15,10 +16,10 @@ const LoginPage: React.FC = () => {
   const [passwordError, setPasswordError] = useState<string>('');  
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-  const authStore = useAuthStore();  // Add store hook
+  const authStore = useAuthStore();  
 
   const handleGuestMode = () => {
-    authStore.setGuest();  // Use store action
+    authStore.setGuest();  
     navigate('/guest');
   };
 
@@ -41,10 +42,10 @@ const LoginPage: React.FC = () => {
 
   // Shared success handler
   const handleSuccess = (data: { token: string; user: { id: string; name: string } }) => {
-    authStore.setAuth(data.token, data.user);  // Use store action (auto-persists)
-    setFormData({ name: '', password: '' });  // Clear form
-    console.log('Operation successful');  // Replace with toast/UI feedback
-    navigate('/dashboard');  // Redirect to protected dashboard after auth
+    authStore.setAuth(data.token, data.user);  
+    setFormData({ name: '', password: '' });  
+    console.log('Operation successful'); 
+    navigate('/dashboard');  
   };
 
   const handleSubmit = async (endpoint: '/api/login' | '/api/register', operation: string) => {
@@ -52,7 +53,7 @@ const LoginPage: React.FC = () => {
     setNameError(errors.name || '');
     setPasswordError(errors.password || '');
     if (errors.name || errors.password) {
-      return;  // Show all errors at once, don't submit
+      return;  
     }
 
     setNameError('');
@@ -114,6 +115,15 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const handleSubmitRegister = () => handleSubmit('/api/register', 'Registration');
   const handleSubmitLogin = () => handleSubmit('/api/login', 'Login');
+
+  if (isLoading) {
+  return (
+    <div className="loading-center">
+      <LoadingSpinner size="large" centered />
+    </div>
+    );
+  }
+
 
   return (
     <>

@@ -34,10 +34,10 @@ export const getAllUsers = async (req: Request, res: Response) => {
       KeyConditionExpression: '#gsi_pk = :gsi_pk',
       ExpressionAttributeNames: { 
         '#gsi_pk': 'GSIType',
-        '#n': 'name'  // Alias for reserved keyword 'name'
+        '#n': 'name'  
       },
       ExpressionAttributeValues: { ':gsi_pk': 'USER' },
-      ProjectionExpression: 'userId, #n'  // Use alias #n for 'name'
+      ProjectionExpression: 'userId, #n'  
     }));
 
     const users = Items?.map(item => ({ id: item.userId, name: item.name })) || [];
@@ -45,7 +45,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
     res.json({ 
       success: true, 
       users, 
-      user: payload ? payload.userId : null  // Optional: Include info about the requesting user
+      user: payload ? payload.userId : null  
     });
   } catch (error) {
     console.error('Get all users error:', (error as Error).message);

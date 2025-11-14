@@ -1,25 +1,27 @@
 import React from 'react';
-import '../App.css';
+import './LoadingSpinner.css';
 
 interface LoadingSpinnerProps {
-  size?: 'small' | 'medium' | 'large'; // Optional: Controls width/height
-  color?: string; // Optional: Override default color (e.g., via CSS custom property)
+  size?: 'small' | 'medium' | 'large';
+  color?: string;   // Optional override
+  centered?: boolean; // Optional: center in parent
 }
 
-const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ 
-  size = 'medium', 
-  color = '#6366f1' // Default; can be overridden with CSS var
+const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
+  size = 'medium',
+  color = 'var(--profile-text)',
+  centered = false
 }) => {
   const sizeClasses = {
-    small: 'loading-spinner--small',
-    medium: 'loading-spinner--medium',
-    large: 'loading-spinner--large'
+    small: 'spinner--small',
+    medium: 'spinner--medium',
+    large: 'spinner--large'
   };
 
   return (
-    <div 
-      className={`loading-spinner ${sizeClasses[size]}`}
-      style={{ '--spinner-color': color } as React.CSSProperties} // CSS var for dynamic color
+    <div
+      className={`spinner ${sizeClasses[size]} ${centered ? 'spinner-centered' : ''}`}
+      style={{ '--spinner-color': color } as React.CSSProperties}
       role="status"
       aria-label="Loading..."
     />

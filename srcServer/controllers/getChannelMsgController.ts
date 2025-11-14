@@ -12,7 +12,7 @@ export const getChannelMessages = async (
     const channelName = req.params.channelName;
     const pk = `CHANNEL#${channelName}`;
 
-    // Check if channel is locked (fetch META)
+
     const { Item: meta } = await db.send(new GetCommand({
       TableName: tableName,
       Key: { pk, sk: 'META' },
@@ -34,7 +34,7 @@ export const getChannelMessages = async (
       ProjectionExpression: 'sk, content, senderId, userId',
     }));
 
-    // Unwrap if wrapped (your logs show plain)
+    
     const unwrappedItems = (Items || []).map((item: any) => ({
       sk: item.sk || item.sk?.S,
       content: item.content || item.content?.S,
@@ -42,7 +42,7 @@ export const getChannelMessages = async (
       userId: item.userId || item.userId?.S,
     }));
 
-    const messages = formatMessages(unwrappedItems);  // Your helper (sorts/filters MSG#)
+    const messages = formatMessages(unwrappedItems);  
 
     res.json({ success: true, messages });
   } catch (error) {

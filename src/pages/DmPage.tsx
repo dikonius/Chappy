@@ -94,7 +94,7 @@ const DmPage: React.FC = () => {
     const content = newMessage.trim();
     const optimisticTimestamp = new Date().toISOString();
     
-    // Optimistic update
+    // Optimistisc update
     setMessages((prev) => [
       ...prev,
       {
@@ -128,7 +128,7 @@ const DmPage: React.FC = () => {
     }
   };
   
-  if (loading) return <LoadingSpinner size="large" />;
+  if (loading) return <LoadingSpinner size="large" centered />;
   
   return (
     <div className='page-wrapper'>

@@ -32,7 +32,7 @@ export const registerUser = async (req: Request, res: Response<LoginResponse>) =
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const userId = `u${crypto.randomBytes(3).readUIntBE(0, 3)}`;  // Generate unique ID
+        const userId = `u${crypto.randomBytes(3).readUIntBE(0, 3)}`;  
 
         const newUser: User = {
             pk: `USER#${userId}`,
@@ -47,7 +47,7 @@ export const registerUser = async (req: Request, res: Response<LoginResponse>) =
 
         // Auto-login: Generate JWT token immediately after registration
         const now = Math.floor(Date.now() / 1000);
-        const exp = now + 60 * 60;  // 1 hour, like login
+        const exp = now + 60 * 60;  
         const payload: JwtPayload = { userId, exp };
         const token = jwt.sign(payload, jwtSecret);
 

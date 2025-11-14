@@ -55,7 +55,7 @@ interface AuthRequest<
   };
 }
 
-// Message Types (enums/unions for GSIType and related)
+// Message Types 
 type MessageType = 'DM' | 'CHANNEL';
 
 const MESSAGE_TYPES = {
@@ -63,7 +63,7 @@ const MESSAGE_TYPES = {
   CHANNEL: 'CHANNEL' as const,
 } as const;
 
-// Base Message Interface (matches DynamoDB schema; extend for DM/Channel specifics)
+// Base Message Interface 
 interface Message {
   pk: string;
   sk: string;
@@ -74,18 +74,18 @@ interface Message {
   receiverId?: string; // Optional, only for DMs
 }
 
-// DM-specific (extends base)
+// DM-specific 
 interface DmMessage extends Message {
   GSIType: 'DM';
   receiverId: string;
 }
 
-// Channel-specific (extends base)
+// Channel-specific 
 interface ChannelMessage extends Message {
   GSIType: 'CHANNEL';
 }
 
-// Formatted Message Response (for API outputs, e.g., from formatMessages)
+// Formatted Message Response 
 interface FormattedMessage {
   id: string;
   content: string;
@@ -93,13 +93,13 @@ interface FormattedMessage {
   timestamp: string;
 }
 
-// API Response for Messages (e.g., getDMs/getChannelMessages)
+// API Response for Messages 
 interface MessagesResponse {
   success: boolean;
   messages: FormattedMessage[];
 }
 
-// API Response for Channels (from getChannels)
+// API Response for Channels 
 interface Channel {
   id: string;
   name: string;

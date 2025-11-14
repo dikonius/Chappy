@@ -11,7 +11,7 @@ const ERROR_MESSAGES = {
 } as const;
 
 export const sendChannelMessage = async (
-  req: AuthRequest<{ channelName: string }>,  // Typed for req.user
+  req: AuthRequest<{ channelName: string }>,  
   res: Response
 ) => {
   try {
@@ -25,10 +25,10 @@ export const sendChannelMessage = async (
     let senderId: string;
     if (req.user?.userId) {
       senderId = req.user.userId;
-      console.log('Send message - Logged in user senderId:', senderId);  // Debug
+      // console.log('Send message - Logged in user senderId:', senderId);  
     } else {
       senderId = 'guest';
-      console.log('Send message - Guest senderId:', senderId);  // Debug
+      // console.log('Send message - Guest senderId:', senderId); 
     }
 
     const pk = `CHANNEL#${channelName}`;
@@ -40,10 +40,10 @@ export const sendChannelMessage = async (
       Key: { pk, sk: 'META' },
     }));
 
-    console.log('Send message - META for channel:', meta);  // Debug: check isLocked
+    // console.log('Send message - META for channel:', meta);  
 
     const isLocked = meta?.isLocked === true || meta?.isLocked === 'true';
-    console.log('Send message - isLocked:', isLocked, 'senderId:', senderId);  // Debug
+    // console.log('Send message - isLocked:', isLocked, 'senderId:', senderId);  
 
     if (isLocked && senderId === 'guest') {
       console.log('Send message - Blocked guest from locked channel:', channelName);

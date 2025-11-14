@@ -27,7 +27,7 @@ export const getDMs = async (
       ProjectionExpression: 'sk, content, senderId, userId',
     }));
 
-    // Unwrap if wrapped (your logs show plain)
+  
     const unwrappedItems = (Items || []).map((item: any) => ({
       sk: item.sk || item.sk?.S,
       content: item.content || item.content?.S,
@@ -35,7 +35,7 @@ export const getDMs = async (
       userId: item.userId || item.userId?.S,
     }));
 
-    const messages = formatMessages(unwrappedItems);  // Your helper (sorts/filters MSG#)
+    const messages = formatMessages(unwrappedItems); 
 
     res.json({ success: true, messages });
   } catch (error) {

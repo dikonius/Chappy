@@ -7,35 +7,5 @@
 body {
   height: 100%;
   background-color: var(--app-bg, rgba(56, 54, 54, 1));
-}
-
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.loading-spinner {
-  border: 2px solid;
-  border-radius: 50%;
-  border-top-color: transparent;
-  animation: spin 1s linear infinite;
-  border-color: var(--spinner-color, #6366f1); /* Default purple; override with --spinner-color */
-}
-
-/* Size Variants */
-.loading-spinner--small {
-  width: 1rem;
-  height: 1rem;
-}
-
-.loading-spinner--medium {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-
-.loading-spinner--large {
-  width: 2rem;
-  height: 2rem;
+  
 }

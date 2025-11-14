@@ -29,7 +29,6 @@ const ChatPage: React.FC = () => {
   
   const isLoggedIn = !!token && !!user;
   
-  // Map sender IDs → names
   const getSenderName = (senderId: string) => {
     if (senderId === currentUserId) return '(me)';
     return usersMap[senderId] || senderId;
@@ -46,21 +45,15 @@ const ChatPage: React.FC = () => {
       let initialError: string | null = null;
       const usersMapLocal: Record<string, string> = {};
       
-      // --- Fetch channel messages ---
       try {
         const fetchInit: RequestInit = {};
-        if (token) {
-          fetchInit.headers = { Authorization: `Bearer ${token}` };
-        }
+        if (token) fetchInit.headers = { Authorization: `Bearer ${token}` };
         
         const res = await fetch(`/api/channel/${id}`, fetchInit);
         
         if (!res.ok) {
           if (res.status === 403) {
-            if (!isLoggedIn) {
-              navigate('/login');
-              return;
-            }
+            if (!isLoggedIn) return navigate('/login');
             initialError = 'Access denied to this channel.';
           } else {
             throw new Error('Failed to load messages');
@@ -73,12 +66,9 @@ const ChatPage: React.FC = () => {
         initialError = 'Network error during message fetch.';
       }
       
-      // --- Fetch users (name list) ---
       try {
         const fetchUsersInit: RequestInit = {};
-        if (token) {
-          fetchUsersInit.headers = { Authorization: `Bearer ${token}` };
-        }
+        if (token) fetchUsersInit.headers = { Authorization: `Bearer ${token}` };
         
         const usersRes = await fetch('/api/user', fetchUsersInit);
         
@@ -89,7 +79,7 @@ const ChatPage: React.FC = () => {
           });
         }
       } catch {
-        console.warn('User fetch failed — names may display as IDs.');
+        console.warn('User fetch failed — names may show as IDs.');
       }
       
       setMessages(fetchedMessages);
@@ -115,7 +105,6 @@ const ChatPage: React.FC = () => {
     const content = newMessage.trim();
     const optimisticTimestamp = new Date().toISOString();
     
-    // Optimistic local message
     setMessages((prev) => [
       ...prev,
       {
@@ -129,17 +118,16 @@ const ChatPage: React.FC = () => {
     setNewMessage('');
     
     try {
-      const postHeaders: HeadersInit = { 'Content-Type': 'application/json' };
-      if (token) postHeaders['Authorization'] = `Bearer ${token}`;
+      const headers: HeadersInit = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
       
       const res = await fetch(`/api/channel/${id}/send`, {
         method: 'POST',
-        headers: postHeaders,
+        headers,
         body: JSON.stringify({ content }),
       });
       
       if (!res.ok) {
-        // Revert optimistic update
         setMessages((prev) => prev.filter((m) => m.id !== tempId));
         
         if (res.status === 403) {
@@ -155,91 +143,92 @@ const ChatPage: React.FC = () => {
     }
   };
   
-  if (loading) return <LoadingSpinner size="large" />;
+  if (loading) return <LoadingSpinner size="large" centered />;
   
   return (
     <div className='page-wrapper'>
       <div className="chat-page">
-      <header className="chat-header">
-      <h1># {id}</h1>
-      <button onClick={() => navigate('/dashboard')}>Back</button>
-      </header>
-      
-      <div className="chat-messages">
-      {messages.length > 0 ? (
-        messages.map((msg, index) => {
-          const prev = messages[index - 1];
+        <header className="chat-header">
+          <h1># {id}</h1>
+          <button onClick={() => navigate('/dashboard')}>Back</button>
+        </header>
+        
+        <div className="chat-messages">
+          {messages.length > 0 ? (
+            messages.map((msg, index) => {
+              const prev = messages[index - 1];
+              
+              const isGrouped =
+                prev &&
+                prev.senderId === msg.senderId &&
+                Math.abs(
+                  new Date(msg.timestamp).getTime() -
+                  new Date(prev.timestamp).getTime()
+                ) < 4 * 60 * 1000;
+              
+              const isSent =
+                msg.senderId === currentUserId || msg.senderId === 'Me';
+              
+              return (
+                <div
+                  key={msg.id}
+                  className={`message-item ${
+                    isSent ? 'sent' : 'received'
+                  } ${isGrouped ? 'grouped' : ''}`}
+                >
+                  <div className="message-bubble">
+                    <p>{msg.content}</p>
+                    
+                    {!isGrouped && (
+                      <span className="message-sender">
+                        {getSenderName(msg.senderId)}
+                      </span>
+                    )}
+                    
+                    <span className="message-time">
+                      {formatMessageTime(msg.timestamp)}
+                    </span>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="no-messages">No messages yet.</div>
+          )}
           
-          const isGrouped =
-          prev &&
-          prev.senderId === msg.senderId &&
-          Math.abs(
-            new Date(msg.timestamp).getTime() -
-            new Date(prev.timestamp).getTime()
-          ) < 4 * 60 * 1000;
-          
-          const isSent = msg.senderId === currentUserId || msg.senderId === 'Me';
-          
-          return (
-            <div
-            key={msg.id}
-            className={`message-item ${
-              isSent ? 'sent' : 'received'
-            } ${isGrouped ? 'grouped' : ''}`}
-            >
-            <div className="message-bubble">
-            <p>{msg.content}</p>
+          <div ref={messagesEndRef} />
+        </div>
+        
+        {error && <div className="chat-error">{error}</div>}
+        
+        <div className="chat-input-section">
+          <textarea
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+
             
-            {/* Sender name only on first bubble in a group */}
-            {!isGrouped && (
-              <span className="message-sender">
-              {getSenderName(msg.senderId)}
-              </span>
-            )}
-            
-            <span className="message-time">
-            {formatMessageTime(msg.timestamp)}
-            </span>
-            </div>
-            </div>
-          );
-        })
-      ) : (
-        <div className="no-messages">No messages yet.</div>
-      )}
-      
-      <div ref={messagesEndRef} />
-      </div>
-      
-      {error && <div className="chat-error">{error}</div>}
-      
-      <div className="chat-input-section">
-      <textarea
-      value={newMessage}
-      onChange={(e) => setNewMessage(e.target.value)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault(); // Prevent newline
-          handleSendMessage(); // Send message
-        }
-      }}
-      placeholder="Type a message..."
-      disabled={sending}
-      className="message-input"
-      rows={1}
-      />
-      
-      
-      <button
-      onClick={handleSendMessage}
-      disabled={sending || !newMessage.trim()}
-      >
-      {sending ? 'Sending...' : 'Send'}
-      </button>
-      </div>
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();      // Stop newline
+                handleSendMessage();     // Send message
+              }
+            }}
+
+            placeholder="Type a message..."
+            disabled={sending}
+            className="message-input"
+            rows={1}
+          />
+          
+          <button
+            onClick={handleSendMessage}
+            disabled={sending || !newMessage.trim()}
+          >
+            {sending ? 'Sending...' : 'Send'}
+          </button>
+        </div>
       </div>
     </div>
-      
   );
 };
 

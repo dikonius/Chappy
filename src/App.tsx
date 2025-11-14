@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useLayoutEffect, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import './App.css';
 import { useAuthStore } from './store/useAuthStore';
@@ -6,8 +6,8 @@ import { useAuthStore } from './store/useAuthStore';
 const App: React.FC = () => {
   const { token, isGuest } = useAuthStore();
 
-  // Load profile colors globally on app load + auth state change
-  useEffect(() => {
+  // Apply colors BEFORE first render
+  useLayoutEffect(() => {
     if (token && !isGuest) {
       const saved = localStorage.getItem('profileColors');
       if (saved) {
@@ -18,10 +18,16 @@ const App: React.FC = () => {
       }
     }
 
-    // Default colors
-    document.documentElement.style.setProperty('--profile-bg', 'rgba(153, 217, 249, 1)');
-    document.documentElement.style.setProperty('--profile-text', '#000000');
+    // Default guest / fallback theme
+    document.documentElement.style.setProperty('--profile-bg', '#9ab5c1');
+    document.documentElement.style.setProperty('--profile-text', 'black');
   }, [token, isGuest]);
+
+  // Add/remove guest mode class
+  useEffect(() => {
+    if (isGuest) document.body.classList.add('guest-mode');
+    else document.body.classList.remove('guest-mode');
+  }, [isGuest]);
 
   return (
     <div className="app">

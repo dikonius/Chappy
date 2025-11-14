@@ -6,12 +6,12 @@ import { generateMessageSK } from '../utils/Messages.js';
 import { MESSAGE_TYPES } from '../data/types.js';
 
 export const sendDM = async (
-  req: AuthRequest<{ receiverId: string }, {}, { content: string }>,  // receiverId from path, content from body
+  req: AuthRequest<{ receiverId: string }, {}, { content: string }>, 
   res: Response
 ) => {
   try {
-    const { receiverId } = req.params;  // From path
-    const { content } = req.body;  // Only content in body
+    const { receiverId } = req.params;  
+    const { content } = req.body;  
     if (!req.user?.userId) {
       return res.status(401).json({ success: false, message: 'Authentication required to send DMs' });
     }

@@ -4,7 +4,7 @@
   /* width: 70vw; */
   display: flex;
   flex-direction: column;
-  background-color: rgba(56, 54, 54, 1); /* Dark from home */
+  background-color: rgba(56, 54, 54, 1); 
   border-radius: 5em;
 }
 
@@ -25,7 +25,7 @@
 }
 
 .chat-header button {
-  background-color: #da9548; /* Orange from home */
+  background-color: #da9548; 
   color: black;
   border: none;
   padding: 0.5rem 1rem;
@@ -56,12 +56,12 @@
   align-self: flex-end;
 }
 
-.message-bubble {
+/* .message-bubble {
   padding: 0.75rem 1rem;
   min-width: 10em;
   border-radius: 18px;
-  background-color: #007bff; /* Blue for sent, adjust for received */
-}
+  background-color: #007bff; 
+} */
 
 .message-item.sent .message-bubble {
   background-color: var(--profile-bg);
@@ -120,7 +120,7 @@
 }
 
 .chat-input-section button {
-  background-color: #da9548; /* Orange from home */
+  background-color: #da9548; 
   color: black;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -139,24 +139,23 @@
   cursor: not-allowed;
 }
 
-/* --- MESSAGE CONTAINER LAYOUT --- */
+
 .message-item {
   display: flex;
   width: 100%;
   margin-bottom: 4px;
 }
 
-/* Received (Left) */
 .message-item.received {
   justify-content: flex-start;
 }
 
-/* Sent (Right) */
+
 .message-item.sent {
   justify-content: flex-end;
 }
 
-/* --- MESSAGE BUBBLE --- */
+
 .message-bubble {
   max-width: 70%;
   padding: 0.6rem 1rem;
@@ -166,13 +165,13 @@
   color: white;
 }
 
-/* Sent bubble (your theme colors) */
+
 .message-item.sent .message-bubble {
   background-color: var(--profile-bg);
   color: var(--profile-text);
 }
 
-/* --- Tails (Triangle bubbles like Messenger) --- */
+
 .message-item.received .message-bubble::after {
   content: "";
   position: absolute;
@@ -180,7 +179,7 @@
   top: 10px;
   width: 0;
   height: 0;
-  border-right: 10px solid #2b2b2b; /* Same as bubble */
+  border-right: 10px solid #2b2b2b; 
   border-top: 10px solid transparent;
   border-bottom: 10px solid transparent;
 }
@@ -197,7 +196,7 @@
   border-bottom: 10px solid transparent;
 }
 
-/* --- MESSAGE GROUPING --- */
+
 .message-item.grouped .message-bubble {
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
@@ -211,12 +210,12 @@
   border-top-left-radius: 6px;
 }
 
-/* Hide tails on grouped messages */
+
 .message-item.grouped .message-bubble::after {
   display: none;
 }
 
-/* Time aligned under the bubble */
+
 .message-time {
   font-size: 0.75rem;
   opacity: 0.7;

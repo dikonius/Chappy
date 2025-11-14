@@ -46,7 +46,7 @@
 
 .color-palette {
   display: grid;
-  grid-template-columns: repeat(5, 1fr); /* 7x3 grid for 21 colors */
+  grid-template-columns: repeat(5, 1fr); 
   gap: 1em;
   margin-bottom: 0.5em;
 }
@@ -84,7 +84,7 @@
 }
 
 .color-radio-label:hover input:not(:disabled) + .color-radio-btn {
-  border-color: #fff; /* White hover border */
+  border-color: #fff; 
 }
 
 .color-input[type="color"] {
@@ -128,7 +128,7 @@
 @media (max-width: 768px) {
 
   .color-palette {
-    grid-template-columns: repeat(3, 1fr); /* 3x7 grid on mobile */
+    grid-template-columns: repeat(3, 1fr); 
     gap: 1.5em;
   }
 
