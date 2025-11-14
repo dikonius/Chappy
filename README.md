@@ -1,73 +1,43 @@
-# React + TypeScript + Vite
+Chappy – Real-Time Chat Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Fullstack-projekt för kursens inlämningsuppgift. Projektet visar en chatapplikation med användarhantering, DM-funktion och kanaler (både öppna och låsta). Allt är byggt enligt kursens tekniker.
 
-Currently, two official plugins are available:
+Om projektet
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Chappy är en chat applikation där användare kan:
 
-## React Compiler
+-Chatta i öppna kanaler (alla kan delta)
+-Chatta i låsta kanaler (endast inloggade)
+-Skicka direktmeddelanden mellan två användare (DM)
+-Registrera konto och logga in
+-Anpassa sin profilfärg (med Zustand-lagring)
+-Använda appen som gäst (endast läsa öppna kanaler)
+-Se vilka användare och kanaler som finns
+-Projektet uppfyller alla krav för G-nivå, inklusive Zustand-baserad state-hantering i frontend.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Expanding the ESLint configuration
+Demo
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Appen är hostad på Render:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+https://chappy-bj22.onrender.com
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Tekniker:
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Frontend
+  -React (Vite)
+  -TypeScript
+  -Zustand
+  -React Router DOM
+  -CSS / responsive design
+  -Fetch API
+  -Render deployment
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Backend
+  -Node.js
+  -Express
+  -TypeScript
+  -DynamoDB
+  -JWT
+  -Bcrypt
